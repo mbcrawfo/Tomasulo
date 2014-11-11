@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="cpp-utils">
+      <UniqueIdentifier>{3b614439-b556-4ccb-84f5-6fbf4e705cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpp-utils\log">
+      <UniqueIdentifier>{5b6b9c1f-aa2e-4139-9d59-041dd4174f83}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\cpp-utils\src\log\Log.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp-utils\src\log\LogMessage.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp-utils\src\log\LogWriter.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpp-utils\src\log\StreamLogWriter.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp" />
+  </ItemGroup>
+</Project>
