@@ -6,7 +6,7 @@ CXX ?= g++
 # Extension of source files used in the project
 SRC_EXT = cpp
 # Path to the source directory, relative to the makefile
-SRC_PATH = .
+SRC_PATH = src
 # General compiler flags
 COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g
 # Additional release-specific flags
@@ -14,7 +14,7 @@ RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
-INCLUDES = -Isrc -Icpp-utils/include
+INCLUDES = -Isrc -Ideps/cpp-utils/include -Ideps/tclap-1.2.1/include
 # General linker settings
 LINK_FLAGS = 
 # Additional release-specific linker settings
@@ -62,7 +62,7 @@ install: export BIN_PATH := bin/release
 # Find all source files in the source directory, sorted by most
 # recently modified
 SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' -not -name 'test.cpp'\
-					-printf '%T@\t%p\n' | sort -k 1nr | cut -f2-)
+					-follow -printf '%T@\t%p\n' | sort -k 1nr | cut -f2-)
 # fallback in case the above fails
 rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \
 						$(filter $(subst *,%,$2), $d))
