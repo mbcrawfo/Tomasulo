@@ -25,8 +25,11 @@
     <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp">
       <Filter>cpp-utils\log</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
+    <ClInclude Include="..\src\Memory.h" />
+    <ClInclude Include="..\src\types.h" />
   </ItemGroup>
 </Project>

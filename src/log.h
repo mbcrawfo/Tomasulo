@@ -3,6 +3,7 @@
 
 #include "log/Log.h"
 
+using util::LogLevel;
 extern const util::StrongLogPtr logger;
 
 #endif

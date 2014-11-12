@@ -90,9 +90,12 @@
     <ClCompile Include="..\deps\cpp-utils\src\log\LogWriter.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
+    <ClInclude Include="..\src\Memory.h" />
+    <ClInclude Include="..\src\types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
