@@ -9,18 +9,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\cpp-utils\src\log\Log.cpp">
-      <Filter>cpp-utils\log</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cpp-utils\src\log\LogMessage.cpp">
-      <Filter>cpp-utils\log</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cpp-utils\src\log\LogWriter.cpp">
-      <Filter>cpp-utils\log</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cpp-utils\src\log\StreamLogWriter.cpp">
-      <Filter>cpp-utils\log</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\deps\cpp-utils\src\log\FileLogWriter.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\cpp-utils\src\log\Log.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\cpp-utils\src\log\LogMessage.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\cpp-utils\src\log\LogWriter.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp">
+      <Filter>cpp-utils\log</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

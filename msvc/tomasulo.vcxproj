@@ -43,13 +43,13 @@
     <LinkIncremental>true</LinkIncremental>
     <IntDir>..\build\$(Configuration)\</IntDir>
     <OutDir>..\bin\$(Configuration)\</OutDir>
-    <IncludePath>..\src;..\cpp-utils\include\;$(IncludePath)</IncludePath>
+    <IncludePath>..\src;..\deps\cpp-utils\include\;..\deps\tclap-1.2.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>..\build\$(Configuration)\</IntDir>
     <OutDir>..\bin\$(Configuration)\</OutDir>
-    <IncludePath>..\src;..\cpp-utils\include\;$(IncludePath)</IncludePath>
+    <IncludePath>..\src;..\deps\cpp-utils\include\;..\deps\tclap-1.2.1\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,10 +84,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\cpp-utils\src\log\Log.cpp" />
-    <ClCompile Include="..\cpp-utils\src\log\LogMessage.cpp" />
-    <ClCompile Include="..\cpp-utils\src\log\LogWriter.cpp" />
-    <ClCompile Include="..\cpp-utils\src\log\StreamLogWriter.cpp" />
+    <ClCompile Include="..\deps\cpp-utils\src\log\FileLogWriter.cpp" />
+    <ClCompile Include="..\deps\cpp-utils\src\log\Log.cpp" />
+    <ClCompile Include="..\deps\cpp-utils\src\log\LogMessage.cpp" />
+    <ClCompile Include="..\deps\cpp-utils\src\log\LogWriter.cpp" />
+    <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp" />
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
