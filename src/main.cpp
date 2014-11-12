@@ -1,8 +1,8 @@
-#include "tclap/CmdLine.h"
-#include "log/Log.h"
+#include "log.h"
 #include "log/FileLogWriter.h"
 #include "log/StreamLogWriter.h"
 #include "log/ILogFormatter.h"
+#include "tclap/CmdLine.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,6 +10,8 @@
 #include <sstream>
 
 using namespace util;
+
+const StrongLogPtr logger(new Log("tomasulo log"));
 
 /**
  * Formats log messages in the form:
@@ -56,13 +58,13 @@ int main(int argc, char* argv[])
   }
 
   // logging initialization
-  StrongLogPtr log(new Log("tomasulo log", args.logLevel));
+  logger->setLevel(args.logLevel);
   StrongLogFormatterPtr formatter(new Formatter);
   if (args.logConsole)
   {
     StrongLogWriterPtr console(new StreamLogWriter(std::cout));
     console->setFormatter(formatter);
-    log->addWriter("console", console);
+    logger->addWriter("console", console);
   }
   if (!args.logFileName.empty())
   {
@@ -73,7 +75,7 @@ int main(int argc, char* argv[])
       return 1;
     }
     file->setFormatter(formatter);
-    log->addWriter("file", file);
+    logger->addWriter("file", file);
   }
 
   return 0;

@@ -26,4 +26,7 @@
       <Filter>cpp-utils\log</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\log.h" />
+  </ItemGroup>
 </Project>
