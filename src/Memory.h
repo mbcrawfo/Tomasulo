@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include <string>
+#include <memory>
 
 /**
  * A byte accessible block of memory.
@@ -53,5 +54,7 @@ public:
    */
   void dump(Address addr, UWord bytes) const;
 };
+
+using MemoryPtr = std::shared_ptr<Memory>;
 
 #endif

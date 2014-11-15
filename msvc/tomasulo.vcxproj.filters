@@ -26,10 +26,16 @@
       <Filter>cpp-utils\log</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Memory.cpp" />
+    <ClCompile Include="..\src\Tomasulo.cpp" />
+    <ClCompile Include="..\src\instruction_types.cpp" />
+    <ClCompile Include="..\src\Instruction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\Memory.h" />
     <ClInclude Include="..\src\types.h" />
+    <ClInclude Include="..\src\Tomasulo.h" />
+    <ClInclude Include="..\src\instruction_types.h" />
+    <ClInclude Include="..\src\Instruction.h" />
   </ItemGroup>
 </Project>

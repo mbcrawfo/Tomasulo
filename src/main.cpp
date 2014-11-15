@@ -1,5 +1,6 @@
 #include "log.h"
 #include "Memory.h"
+#include "Tomasulo.h"
 #include "log/FileLogWriter.h"
 #include "log/StreamLogWriter.h"
 #include "log/ILogFormatter.h"
@@ -12,6 +13,8 @@
 
 using namespace util;
 
+static const std::string TAG = "main";
+static const std::size_t TOMASULO_MEMORY_SIZE = 32 * 1024;
 const StrongLogPtr logger(new Log("tomasulo log"));
 
 /**
@@ -79,9 +82,13 @@ int main(int argc, char* argv[])
     logger->addWriter("file", file);
   }
 
-  Memory mem(2 * 1024);
-  Memory::loadFromFile(mem, args.fileName);
-  mem.dump(0, 32);
+  MemoryPtr memory(new Memory(TOMASULO_MEMORY_SIZE));
+  Memory::loadFromFile(*memory, args.fileName);
+  
+  Tomasulo tomasulo(memory, args.verbose);
+  tomasulo.run();
+  logger->info(TAG) << "Execution finished in " << tomasulo.clocks() 
+    << " cycles";
 
   return 0;
 }
