@@ -12,7 +12,7 @@ using Word = int32_t;
 using UWord = uint32_t;
 using ByteBuffer = std::vector<Byte>;
 
-union DataType
+union Data
 {
   Byte b[4];
   HalfWord h[2];

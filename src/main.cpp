@@ -1,4 +1,5 @@
 #include "log.h"
+#include "Memory.h"
 #include "log/FileLogWriter.h"
 #include "log/StreamLogWriter.h"
 #include "log/ILogFormatter.h"
@@ -77,6 +78,10 @@ int main(int argc, char* argv[])
     file->setFormatter(formatter);
     logger->addWriter("file", file);
   }
+
+  Memory mem(2 * 1024);
+  Memory::loadFromFile(mem, args.fileName);
+  mem.dump(0, 32);
 
   return 0;
 }
