@@ -2,6 +2,7 @@
 #define __MEMORY_H__
 
 #include "types.h"
+#include "Exceptions.h"
 #include <string>
 #include <memory>
 
@@ -14,8 +15,6 @@ private:
   ByteBuffer mem;
 
 public:
-  static bool loadFromFile(Memory& mem, const std::string& filename);
-
   /**
    * Create a memory block that holds size bytes.  Size is rounded up to be a 
    * multiple of the word size.
@@ -28,6 +27,11 @@ public:
    * Return the number of bytes in the memory.
    */
   uint32_t size() const;
+
+  /**
+   * Clears the full memory to zero.
+   */
+  void clear();
 
   /**
    * Reads a chunk of memory, either as a raw buffer or a specific type.
@@ -52,7 +56,7 @@ public:
    * and bytes rounded up so that the output is always done in multiples of 
    * full words.
    */
-  void dump(Address addr, UWord bytes) const;
+  void dump(Address addr, std::size_t bytes) const;
 };
 
 using MemoryPtr = std::shared_ptr<Memory>;

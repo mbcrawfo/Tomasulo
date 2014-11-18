@@ -89,6 +89,7 @@
     <ClCompile Include="..\deps\cpp-utils\src\log\LogMessage.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\LogWriter.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp" />
+    <ClCompile Include="..\src\Exceptions.cpp" />
     <ClCompile Include="..\src\Instruction.cpp" />
     <ClCompile Include="..\src\instruction_types.cpp" />
     <ClCompile Include="..\src\main.cpp" />
@@ -96,6 +97,7 @@
     <ClCompile Include="..\src\Tomasulo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\Instruction.h" />
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\Memory.h" />

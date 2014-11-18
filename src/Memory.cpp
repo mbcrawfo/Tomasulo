@@ -4,92 +4,13 @@
 #include <string>
 #include <cassert>
 #include <algorithm>
-#include <iomanip>
-#include <fstream>
-#include <cctype>
-#include <sstream>
+
+// verify some assumptions about type sizes
+static_assert(sizeof(Byte) == 1, "Unexpected byte size");
+static_assert(sizeof(Word) == sizeof(UWord), "word size mismatch");
+static_assert(sizeof(float) == sizeof(UWord), "word size mismatch");
 
 static const std::string TAG = "memory";
-static const std::string HEX_DIGIT = "0123456789abcdefABCDEF";
-
-bool Memory::loadFromFile(Memory& mem, const std::string& filename)
-{
-  std::ifstream file(filename.c_str(), std::ios::in);
-  if (!file)
-  {
-    logger->error(TAG, "Unable to open file " + filename);
-    return false;
-  }
-
-  std::size_t count = 0;
-  logger->debug(TAG, "Loading from file " + filename);
-  while (!file.eof())
-  {
-    std::string line;
-    std::getline(file, line);
-    //logger->verbose(TAG, "Read line \"" + line + "\"");
-
-    // strip comments
-    auto commentIdx = line.find_first_of('#');
-    if (commentIdx != std::string::npos)
-    {
-      line.resize(commentIdx);
-    }
-    
-    // relevant data in the line is
-    // [32 bit address]: [bytes...]
-    // A line without a colon is skipped
-    auto colon = line.find(':');
-    if (colon == std::string::npos)
-    {
-      continue;
-    }
-        
-    std::istringstream is;
-
-    // pull the address
-    Address addr;
-    is.str(line.substr(0, colon));
-    is >> std::hex >> addr;
-    //logger->verbose(TAG) << "Address: " << util::hex<Address> << addr;
-
-    // find the hex data string after the colon
-    auto start = line.find_first_of(HEX_DIGIT, colon + 1);
-    auto end = line.find_last_of(HEX_DIGIT);
-    is = std::istringstream(line.substr(start, end - start + 1));
-    //logger->verbose(TAG, is.str());
-
-    ByteBuffer buffer;    
-    buffer.reserve((end - start) / 2);
-    while (is.rdbuf()->in_avail() > 0)
-    {
-      std::string str;
-      std::stringstream temp;
-      // must use an integer type because streams will treat *any* char type 
-      // as an ascii character rather than an integer
-      UWord byte;
-
-      // pull 2 characters from the stream and convert them through a 
-      // temporary stream buffer
-      // why can't you pull them directly from the stream?  no idea, but if you 
-      // try to do that it ignores the width directive
-      is.width(2);
-      is >> str;
-      temp << str;
-      temp >> std::hex >> byte;
-      buffer.push_back(static_cast<Byte>(byte));
-      //logger->verbose(TAG) << "Byte: " << util::hex<Byte> << byte;
-    }
-
-    count += buffer.size();
-    mem.write(addr, buffer);
-    logger->debug(TAG) << "Writing " << buffer.size() << " bytes to "
-      << util::hex<Address> << addr;
-  }
-
-  logger->debug(TAG) << "Read in " << count << " bytes";
-  return true;
-}
 
 Memory::Memory(UWord size)
   : mem(size + (size % sizeof(Word)), 0)
@@ -103,10 +24,17 @@ std::size_t Memory::size() const
   return mem.size();
 }
 
+void Memory::clear()
+{
+  std::fill(mem.begin(), mem.end(), 0);
+}
+
 ByteBuffer Memory::read(Address addr, UWord bytes) const
 {
-  assert(bytes > 0);
-  assert(addr + bytes - 1 < size());
+  if (addr + bytes >= size())
+  {
+    throw InvalidAddressException(addr, bytes, size());
+  }
 
   auto start = mem.begin() + addr;
   auto end = start + bytes;
@@ -114,15 +42,22 @@ ByteBuffer Memory::read(Address addr, UWord bytes) const
 }
 
 Byte Memory::readByte(Address addr) const
-{
-  assert(addr < size());
+{  
+  if (addr + sizeof(Byte) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(Byte), size());
+  }
+
   return mem[addr];
 }
 
 Word Memory::readWord(Address addr) const
-{
-  static_assert(sizeof(Word) == sizeof(UWord), "word size mismatch");
-  assert(addr + sizeof(Word) - 1 < size());
+{  
+  if (addr + sizeof(Word) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(Word), size());
+  }
+
   Data t;
   t.uw = readUWord(addr);
   return t.w;
@@ -130,7 +65,11 @@ Word Memory::readWord(Address addr) const
 
 UWord Memory::readUWord(Address addr) const
 {
-  assert(addr + sizeof(UWord) - 1 < size());
+  if (addr + sizeof(UWord) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(UWord), size());
+  }
+
   Data t;
   auto start = mem.begin() + addr;
   auto end = start + sizeof(UWord);
@@ -139,9 +78,12 @@ UWord Memory::readUWord(Address addr) const
 }
 
 float Memory::readFloat(Address addr) const
-{
-  static_assert(sizeof(float) == sizeof(UWord), "word size mismatch");
-  assert(addr + sizeof(float) - 1 < size());
+{    
+  if (addr + sizeof(float) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(float), size());
+  }
+
   Data t;
   t.uw = readUWord(addr);
   return t.f;
@@ -149,21 +91,31 @@ float Memory::readFloat(Address addr) const
 
 void Memory::write(Address addr, const ByteBuffer& bytes)
 {
-  assert(bytes.size() > 0);
-  assert(addr + bytes.size() - 1 < size());
+  if (addr + bytes.size() >= size())
+  {
+    throw InvalidAddressException(addr, bytes.size(), size());
+  }
+
   std::copy(bytes.begin(), bytes.end(), mem.begin() + addr);
 }
 
 void Memory::writeByte(Address addr, Byte b)
 {
-  assert(addr < size());
+  if (addr + sizeof(Byte) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(Byte), size());
+  }
+
   mem[addr] = b;
 }
 
 void Memory::writeWord(Address addr, Word w)
 {
-  static_assert(sizeof(Word) == sizeof(UWord), "word size mismatch");
-  assert(addr + sizeof(Word) - 1 < size());
+  if (addr + sizeof(Word) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(Word), size());
+  }
+
   Data t;
   t.w = w;
   writeUWord(addr, t.uw);
@@ -171,7 +123,11 @@ void Memory::writeWord(Address addr, Word w)
 
 void Memory::writeUWord(Address addr, UWord uw)
 {
-  assert(addr + sizeof(UWord) - 1 < size());
+  if (addr + sizeof(UWord) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(UWord), size());
+  }
+
   Data t;
   t.uw = uw;
   std::reverse_copy(t.b, t.b + sizeof(UWord), mem.begin() + addr);
@@ -179,17 +135,22 @@ void Memory::writeUWord(Address addr, UWord uw)
 
 void Memory::writeFloat(Address addr, float f)
 {
-  static_assert(sizeof(float) == sizeof(UWord), "word size mismatch");
-  assert(addr + sizeof(float) - 1 < size());
+  if (addr + sizeof(float) >= size())
+  {
+    throw InvalidAddressException(addr, sizeof(float), size());
+  }
+
   Data t;
   t.f = f;
   writeUWord(addr, t.uw);
 }
 
-void Memory::dump(Address addr, UWord bytes) const
+void Memory::dump(Address addr, std::size_t bytes) const
 {
-  assert(bytes > 0);
-  assert(addr + bytes < size());
+  if (addr + bytes >= size())
+  {
+    throw InvalidAddressException(addr, bytes, size());
+  }
 
   auto offset = addr % sizeof(UWord);
   if (offset > 0)
