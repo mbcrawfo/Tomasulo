@@ -1,6 +1,10 @@
 #include "Tomasulo.h"
+#include "log.h"
 #include "Instruction.h"
 #include <cassert>
+#include <string>
+
+static const std::string TAG = "Tomasulo";
 
 Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
   : verbose(verbose), halted(false), clockCounter(0), memory(memory)
@@ -27,8 +31,11 @@ void Tomasulo::run(Address entryPoint)
     clockCounter++;
 
     UWord rawInstruction = memory->readUWord(pc);
-    Instruction instruction = Instruction::decode(rawInstruction);
-    if (instruction.name == InstructionName::NOP)
+    StrongInstructionPtr instruction = Instruction::decode(rawInstruction);
+    assert(instruction != nullptr);
+    logger->debug(TAG) << "Decoded " << *instruction;
+
+    if (instruction->name == InstructionName::NOP)
     {
       halted = true;
     }

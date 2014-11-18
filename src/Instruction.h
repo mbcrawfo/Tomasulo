@@ -3,21 +3,29 @@
 
 #include "types.h"
 #include "instruction_types.h"
+#include "utility/IToString.h"
+#include <memory>
+
+class Instruction;
+using StrongInstructionPtr = std::shared_ptr<Instruction>;
 
 class Instruction
+  : public util::IToString
 {
 private:
-  Instruction() = default;
+  Instruction();
 
 public:
-  static Instruction decode(UWord instruction);
+  static StrongInstructionPtr decode(UWord instruction);
 
   InstructionName name;
-  InstructionType type;  
+  FunctionalUnitType type;  
   Byte rd;
   Byte rs1;
   Byte rs2;
   UWord immediate;
+
+  virtual std::string toString() const override;
 };
 
 #endif

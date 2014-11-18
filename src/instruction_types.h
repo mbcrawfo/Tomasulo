@@ -2,8 +2,9 @@
 #define __INSTRUCTION_TYPES_H__
 
 #include "types.h"
+#include <ostream>
 
-enum class InstructionType
+enum class FunctionalUnitType
 {
   Integer,
   Trap,
@@ -15,8 +16,8 @@ enum class InstructionType
 enum class InstructionEncodingType
 {
   Itype,
-  RType,
-  JType
+  Rtype,
+  Jtype
 };
 
 enum class InstructionName
@@ -53,11 +54,15 @@ enum class InstructionName
   CVTF2I,
   CVTI2F,
   MULT,
-  DIV,
+  DIV
 };
 
 extern InstructionEncodingType getEncodingType(Byte opcode);
 extern InstructionName getName(Byte opcode, Byte funcode = 0);
-extern InstructionType getInstructionType(InstructionName name);
+extern FunctionalUnitType getInstructionType(InstructionName name);
+
+std::ostream& operator<<(std::ostream& os, FunctionalUnitType type);
+std::ostream& operator<<(std::ostream& os, InstructionEncodingType type);
+std::ostream& operator<<(std::ostream& os, InstructionName name);
 
 #endif
