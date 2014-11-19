@@ -6,10 +6,28 @@
 
 static const std::string TAG = "Tomasulo";
 
+// machine configuration
+static const int GPR_REGISTERS = 32;
+static const int FPR_REGISTERS = 32;
+
 Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
-  : verbose(verbose), halted(false), clockCounter(0), memory(memory)
+  : verbose(verbose),
+    halted(false),
+    clockCounter(0),
+    memory(memory),
+    registers()
 {
   assert(memory != nullptr);
+
+  Data data = { 0 };
+  for (int i = 0; i < GPR_REGISTERS; ++i)
+  {
+    registers[{RegisterType::GPR, i}] = data;
+  }
+  for (int i = 0; i < FPR_REGISTERS; ++i)
+  {
+    registers[{RegisterType::FPR, i}] = data;
+  }
 }
 
 bool Tomasulo::isHalted() const

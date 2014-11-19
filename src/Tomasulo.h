@@ -3,6 +3,8 @@
 
 #include "types.h"
 #include "Memory.h"
+#include "RegisterID.h"
+#include <unordered_map>
 
 class Tomasulo
 {
@@ -12,6 +14,7 @@ private:
   std::size_t clockCounter;
   Address pc;
   MemoryPtr memory;
+  std::unordered_map<RegisterID, Data> registers;
 
 public:
   explicit Tomasulo(MemoryPtr memory, bool verbose = false);

@@ -30,6 +30,10 @@
     <ClCompile Include="..\src\instruction_types.cpp" />
     <ClCompile Include="..\src\Instruction.cpp" />
     <ClCompile Include="..\src\Exceptions.cpp" />
+    <ClCompile Include="..\src\ReservationStationID.cpp" />
+    <ClCompile Include="..\src\RegisterID.cpp" />
+    <ClCompile Include="..\src\ReservationStation.cpp" />
+    <ClCompile Include="..\src\FunctionalUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -39,5 +43,9 @@
     <ClInclude Include="..\src\instruction_types.h" />
     <ClInclude Include="..\src\Instruction.h" />
     <ClInclude Include="..\src\Exceptions.h" />
+    <ClInclude Include="..\src\ReservationStationID.h" />
+    <ClInclude Include="..\src\RegisterID.h" />
+    <ClInclude Include="..\src\ReservationStation.h" />
+    <ClInclude Include="..\src\FunctionalUnit.h" />
   </ItemGroup>
 </Project>
