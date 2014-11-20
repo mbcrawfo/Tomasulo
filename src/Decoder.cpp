@@ -1,28 +1,15 @@
-#include "Instruction.h"
+#include "Decoder.h"
 #include "log.h"
 #include "utility/stream_manip.h"
 #include <string>
-#include <sstream>
 
-static const std::string TAG = "instruction";
+static const std::string TAG = "Decoder";
 
-static void decodeItype(UWord instruction, Instruction& out);
-static void decodeRtype(UWord instruction, Instruction& out);
-static void decodeJtype(UWord instruction, Instruction& out);
-static void setRegisterTypes(Instruction& out);
-
-Instruction::Instruction()
-  : name(InstructionName::NOP), type(FunctionalUnitType::Integer),
-    rd(RegisterID::NONE), rs1(RegisterID::NONE), rs2(RegisterID::NONE),
-    immediate(0xffffffff)
-{
-}
-
-StrongInstructionPtr Instruction::decode(UWord instruction)
+StrongInstructionPtr Decoder::decode(UWord instruction)
 {
   StrongInstructionPtr out(new Instruction);
 
-  //logger->debug(TAG) << "Decoding " << util::hex<UWord> << instruction;
+  logger->verbose(TAG) << "Decoding " << util::hex<UWord> << instruction;
   switch (getEncodingType(instruction >> (31 - 5)))
   {
   case InstructionEncodingType::Itype:
@@ -42,17 +29,9 @@ StrongInstructionPtr Instruction::decode(UWord instruction)
   return out;
 }
 
-std::string Instruction::toString() const
+void Decoder::decodeItype(UWord instruction, Instruction& out)
 {
-  std::ostringstream os;
-  os << name << " rd=" << rd << " rs1=" << rs1 << " rs2=" << rs2 
-    << " imm=" << immediate;
-  return os.str();
-}
-
-void decodeItype(UWord instruction, Instruction& out)
-{
-  //logger->debug(TAG, "Decoding as Itype");
+  logger->verbose(TAG, "Decoding as Itype");
   out.name = getName(instruction >> (31 - 5));
   out.type = getInstructionType(out.name);
   out.rd.index = (instruction >> (31 - 15)) & 0x1f;
@@ -60,9 +39,9 @@ void decodeItype(UWord instruction, Instruction& out)
   out.immediate = instruction & 0xffff;
 }
 
-void decodeRtype(UWord instruction, Instruction& out)
+void Decoder::decodeRtype(UWord instruction, Instruction& out)
 {
-  //logger->debug(TAG, "Decoding as Rtype");
+  logger->verbose(TAG, "Decoding as Rtype");
   out.name = getName(instruction >> (31 - 5), instruction & 0x3f);
   out.type = getInstructionType(out.name);
   out.rd.index = (instruction >> (31 - 20)) & 0x1f;
@@ -71,15 +50,15 @@ void decodeRtype(UWord instruction, Instruction& out)
   out.immediate = 0xffffffff;
 }
 
-void decodeJtype(UWord instruction, Instruction& out)
+void Decoder::decodeJtype(UWord instruction, Instruction& out)
 {
-  //logger->debug(TAG, "Decoding as Jtype");
+  logger->verbose(TAG, "Decoding as Jtype");
   out.name = getName(instruction >> (31 - 5));
   out.type = getInstructionType(out.name);
   out.immediate = instruction & 0x07ffffff;
 }
 
-void setRegisterTypes(Instruction& out)
+void Decoder::setRegisterTypes(Instruction& out)
 {
   switch (out.name)
   {
@@ -158,5 +137,5 @@ void setRegisterTypes(Instruction& out)
     out.rs1.type = RegisterType::FPR;
     out.rs2.type = RegisterType::FPR;
     break;
-  }  
+  }
 }

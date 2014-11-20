@@ -89,26 +89,26 @@
     <ClCompile Include="..\deps\cpp-utils\src\log\LogMessage.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\LogWriter.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp" />
+    <ClCompile Include="..\src\Decoder.cpp" />
     <ClCompile Include="..\src\Exceptions.cpp" />
     <ClCompile Include="..\src\FunctionalUnit.cpp" />
-    <ClCompile Include="..\src\Instruction.cpp" />
-    <ClCompile Include="..\src\instruction_types.cpp" />
+    <ClCompile Include="..\src\instructions\Instruction.cpp" />
+    <ClCompile Include="..\src\instructions\instruction_types.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Memory.cpp" />
     <ClCompile Include="..\src\RegisterID.cpp" />
-    <ClCompile Include="..\src\ReservationStation.cpp" />
     <ClCompile Include="..\src\ReservationStationID.cpp" />
     <ClCompile Include="..\src\Tomasulo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Decoder.h" />
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\FunctionalUnit.h" />
-    <ClInclude Include="..\src\Instruction.h" />
+    <ClInclude Include="..\src\instructions\Instruction.h" />
+    <ClInclude Include="..\src\instructions\instruction_types.h" />
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\Memory.h" />
-    <ClInclude Include="..\src\instruction_types.h" />
     <ClInclude Include="..\src\RegisterID.h" />
-    <ClInclude Include="..\src\ReservationStation.h" />
     <ClInclude Include="..\src\ReservationStationID.h" />
     <ClInclude Include="..\src\Tomasulo.h" />
     <ClInclude Include="..\src\types.h" />

@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "RegisterID.h"
+#include "ReservationStationID.h"
 #include "instruction_types.h"
 #include "utility/IToString.h"
 #include <memory>
@@ -14,19 +15,24 @@ class Instruction
   : public util::IToString
 {
 private:
-  Instruction();
-
-public:
-  static StrongInstructionPtr decode(UWord instruction);
-
   InstructionName name;
-  FunctionalUnitType type;  
+  FunctionalUnitType type;
+  bool writesToCDB;
   RegisterID rd;
   RegisterID rs1;
   RegisterID rs2;
   UWord immediate;
 
+public:  
+   
   virtual std::string toString() const override;
+
+  virtual void execute() = 0;
+  virtual void write() = 0;
+
+private:
+  friend class Decoder;
+  Instruction();
 };
 
 #endif

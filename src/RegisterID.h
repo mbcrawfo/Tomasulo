@@ -12,7 +12,7 @@ enum class RegisterType
 };
 
 /**
- * Identify a register by type and index.
+ * Identifies a register by type and index.
  */
 struct RegisterID
 {

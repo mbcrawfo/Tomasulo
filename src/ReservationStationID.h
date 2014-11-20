@@ -1,11 +1,11 @@
 #ifndef __RESERVATIONSTATIONID_H__
 #define __RESERVATIONSTATIONID_H__
 
-#include "instruction_types.h"
+#include "instructions/instruction_types.h"
 #include <ostream>
 
 /**
- * Identify a reservation station by type and index.
+ * Identifies a reservation station by type and index.
  */
 struct ReservationStationID
 {

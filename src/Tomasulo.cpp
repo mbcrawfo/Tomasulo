@@ -1,6 +1,6 @@
 #include "Tomasulo.h"
 #include "log.h"
-#include "Instruction.h"
+#include "instructions/Instruction.h"
 #include <cassert>
 #include <string>
 
@@ -47,17 +47,5 @@ void Tomasulo::run(Address entryPoint)
   while (!halted)
   {
     clockCounter++;
-
-    UWord rawInstruction = memory->readUWord(pc);
-    StrongInstructionPtr instruction = Instruction::decode(rawInstruction);
-    assert(instruction != nullptr);
-    logger->debug(TAG) << "Decoded " << *instruction;
-
-    if (instruction->name == InstructionName::NOP)
-    {
-      halted = true;
-    }
-
-    pc += 4;
   }
 }
