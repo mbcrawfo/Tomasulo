@@ -41,6 +41,9 @@
       <Filter>instructions</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Decoder.cpp" />
+    <ClCompile Include="..\src\instructions\IntegerInstruction.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -58,5 +61,11 @@
       <Filter>instructions</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Decoder.h" />
+    <ClInclude Include="..\src\instructions\InstructionData.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\instructions\IntegerInstruction.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

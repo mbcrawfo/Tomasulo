@@ -94,6 +94,7 @@
     <ClCompile Include="..\src\FunctionalUnit.cpp" />
     <ClCompile Include="..\src\instructions\Instruction.cpp" />
     <ClCompile Include="..\src\instructions\instruction_types.cpp" />
+    <ClCompile Include="..\src\instructions\IntegerInstruction.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Memory.cpp" />
     <ClCompile Include="..\src\RegisterID.cpp" />
@@ -105,7 +106,9 @@
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\FunctionalUnit.h" />
     <ClInclude Include="..\src\instructions\Instruction.h" />
+    <ClInclude Include="..\src\instructions\InstructionData.h" />
     <ClInclude Include="..\src\instructions\instruction_types.h" />
+    <ClInclude Include="..\src\instructions\IntegerInstruction.h" />
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\Memory.h" />
     <ClInclude Include="..\src\RegisterID.h" />

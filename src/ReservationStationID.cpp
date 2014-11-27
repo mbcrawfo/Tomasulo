@@ -1,5 +1,10 @@
 #include "ReservationStationID.h"
 
+const ReservationStationID ReservationStationID::NONE {
+  static_cast<FunctionalUnitType>(-1), 
+  static_cast<std::size_t>(-1)
+};
+
 std::ostream& operator<<(std::ostream& os, const ReservationStationID& rsid)
 {
   os << rsid.type << rsid.index;

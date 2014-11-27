@@ -6,7 +6,6 @@
 
 enum class RegisterType
 {
-  None,
   GPR,
   FPR
 };

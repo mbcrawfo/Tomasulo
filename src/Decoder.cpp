@@ -5,41 +5,43 @@
 
 static const std::string TAG = "Decoder";
 
-StrongInstructionPtr Decoder::decode(UWord instruction)
+InstructionData Decoder::decode(UWord rawInstruction)
 {
-  StrongInstructionPtr out(new Instruction);
+  instruction = rawInstruction;
+  out = {};
 
   logger->verbose(TAG) << "Decoding " << util::hex<UWord> << instruction;
   switch (getEncodingType(instruction >> (31 - 5)))
   {
   case InstructionEncodingType::Itype:
-    decodeItype(instruction, *out);
+    decodeItype();
     break;
 
   case InstructionEncodingType::Rtype:
-    decodeRtype(instruction, *out);
+    decodeRtype();
     break;
 
   case InstructionEncodingType::Jtype:
-    decodeJtype(instruction, *out);
+    decodeJtype();
     break;
   }
 
-  setRegisterTypes(*out);
+  setRegisterTypes();
   return out;
 }
 
-void Decoder::decodeItype(UWord instruction, Instruction& out)
+void Decoder::decodeItype()
 {
   logger->verbose(TAG, "Decoding as Itype");
   out.name = getName(instruction >> (31 - 5));
   out.type = getInstructionType(out.name);
   out.rd.index = (instruction >> (31 - 15)) & 0x1f;
   out.rs1.index = (instruction >> (31 - 10)) & 0x1f;
+  out.rs2 = RegisterID::NONE;
   out.immediate = instruction & 0xffff;
 }
 
-void Decoder::decodeRtype(UWord instruction, Instruction& out)
+void Decoder::decodeRtype()
 {
   logger->verbose(TAG, "Decoding as Rtype");
   out.name = getName(instruction >> (31 - 5), instruction & 0x3f);
@@ -50,35 +52,38 @@ void Decoder::decodeRtype(UWord instruction, Instruction& out)
   out.immediate = 0xffffffff;
 }
 
-void Decoder::decodeJtype(UWord instruction, Instruction& out)
+void Decoder::decodeJtype()
 {
   logger->verbose(TAG, "Decoding as Jtype");
   out.name = getName(instruction >> (31 - 5));
   out.type = getInstructionType(out.name);
+  out.rd = RegisterID::NONE;
+  out.rs1 = RegisterID::NONE;
+  out.rs2 = RegisterID::NONE;
   out.immediate = instruction & 0x07ffffff;
 }
 
-void Decoder::setRegisterTypes(Instruction& out)
+void Decoder::setRegisterTypes()
 {
   switch (out.name)
   {
-    // No registers
-  case InstructionName::J:
-  case InstructionName::JAL:
-  case InstructionName::NOP:
-    out.rd = RegisterID::NONE;
-    out.rs1 = RegisterID::NONE;
-    out.rs2 = RegisterID::NONE;
+    // trap is a special case
+  case InstructionName::TRAP:
+    if (out.immediate == 2)
+    {
+      out.rs1.type = RegisterType::FPR;
+    }
+    else
+    {
+      out.rs1.type = RegisterType::GPR;
+    }
     break;
 
     // GPR rs1 only
   case InstructionName::BEQZ:
-  case InstructionName::TRAP:
   case InstructionName::JR:
   case InstructionName::JALR:
-    out.rd = RegisterID::NONE;
     out.rs1.type = RegisterType::GPR;
-    out.rs2 = RegisterID::NONE;
     break;
 
     // GPR rd and rs1
@@ -87,7 +92,6 @@ void Decoder::setRegisterTypes(Instruction& out)
   case InstructionName::SW:
     out.rd.type = RegisterType::GPR;
     out.rs1.type = RegisterType::GPR;
-    out.rs2 = RegisterID::NONE;
     break;
 
     // FPR rd, GPR rs1
@@ -96,14 +100,12 @@ void Decoder::setRegisterTypes(Instruction& out)
   case InstructionName::MOVI2FP:
     out.rd.type = RegisterType::FPR;
     out.rs1.type = RegisterType::GPR;
-    out.rs2 = RegisterID::NONE;
     break;
 
     // GPR rd, FPR rs1
   case InstructionName::MOVFP2I:
     out.rd.type = RegisterType::GPR;
     out.rs1.type = RegisterType::FPR;
-    out.rs2 = RegisterID::NONE;
     break;
 
     // FPR rd and rs1
@@ -112,7 +114,6 @@ void Decoder::setRegisterTypes(Instruction& out)
   case InstructionName::CVTI2F:
     out.rd.type = RegisterType::FPR;
     out.rs1.type = RegisterType::FPR;
-    out.rs2 = RegisterID::NONE;
     break;
 
     // 3x GPR

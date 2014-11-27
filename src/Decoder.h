@@ -1,18 +1,22 @@
 #ifndef __DECODE_H__
 #define __DECODE_H__
 
-#include "instructions/Instruction.h"
+#include "instructions/InstructionData.h"
+#include "types.h"
 
 class Decoder
 {
+  UWord instruction;
+  InstructionData out;
+
 public:
-  static StrongInstructionPtr decode(UWord instruction);
+  InstructionData decode(UWord rawInstruction);
 
 private:
-  static void decodeItype(UWord instruction, Instruction& out);
-  static void decodeRtype(UWord instruction, Instruction& out);
-  static void decodeJtype(UWord instruction, Instruction& out);
-  static void setRegisterTypes(Instruction& out);
+  void decodeItype();
+  void decodeRtype();
+  void decodeJtype();
+  void setRegisterTypes();
 };
 
 #endif

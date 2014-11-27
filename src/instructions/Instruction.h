@@ -4,35 +4,68 @@
 #include "types.h"
 #include "RegisterID.h"
 #include "ReservationStationID.h"
-#include "instruction_types.h"
-#include "utility/IToString.h"
+#include "instructions/instruction_types.h"
+#include "instructions/InstructionData.h"
 #include <memory>
 
-class Instruction;
-using StrongInstructionPtr = std::shared_ptr<Instruction>;
+struct InstructionArgs
+{
+  ReservationStationID rsid;
+  InstructionData data;
+  Data arg1;
+  ReservationStationID arg1Source;
+  Data arg2;
+  ReservationStationID arg2Source;
+};
 
 class Instruction
-  : public util::IToString
 {
-private:
-  InstructionName name;
-  FunctionalUnitType type;
-  bool writesToCDB;
-  RegisterID rd;
-  RegisterID rs1;
-  RegisterID rs2;
-  UWord immediate;
+private:  
+  bool arg1Ready;
+  const ReservationStationID arg1Source;  
+  bool arg2Ready;
+  const ReservationStationID arg2Source;
+  std::size_t executeCycles;
 
-public:  
-   
-  virtual std::string toString() const override;
+protected:  
+  Data arg1;
+  Data arg2;
+  Data result;
 
-  virtual void execute() = 0;
-  virtual void write() = 0;
+public:
+  const InstructionData data;
+  const ReservationStationID rsid;
 
-private:
-  friend class Decoder;
-  Instruction();
+  struct Result
+  {
+    enum Dest
+    {
+      None,
+      CDB,
+      PC
+    };
+
+    Dest dest;
+    ReservationStationID source;
+    RegisterID reg;
+    Data value;
+  };
+
+  Instruction() = delete;
+  Instruction(std::size_t executeCycles, const InstructionArgs& args);
+  Instruction(const Instruction&) = delete;
+  Instruction& operator=(const Instruction&) = delete;
+
+  void notify(const ReservationStationID& id, Data data);
+  bool argsReady() const;
+
+  bool execute();
+  virtual Result write() = 0;
+
+protected:
+  virtual void performExecute() = 0;
 };
+
+using StrongInstructionPtr = std::shared_ptr<Instruction>;
 
 #endif

@@ -1,18 +1,22 @@
 #include "RegisterID.h"
 
-const RegisterID RegisterID::NONE = { RegisterType::None, 0xff };
+const RegisterID RegisterID::NONE = {
+  static_cast<RegisterType>(-1),
+  static_cast<std::size_t>(-1)
+};
 
 std::ostream& operator<<(std::ostream& os, const RegisterID& reg)
 {
-  switch (reg.type)
+  if (reg == RegisterID::NONE)
   {
-  case RegisterType::None:
     os << "None";
-    break;
-  case RegisterType::GPR:
+  }
+  else if (reg.type == RegisterType::GPR)
+  {
     os << "R" << reg.index;
-    break;
-  case RegisterType::FPR:
+  }
+  else if (reg.type == RegisterType::FPR)
+  {
     os << "F" << reg.index;
   }
   return os;
@@ -20,14 +24,7 @@ std::ostream& operator<<(std::ostream& os, const RegisterID& reg)
 
 bool operator==(const RegisterID& lhs, const RegisterID& rhs)
 {
-  if (lhs.type == RegisterType::None)
-  {
-    return rhs.type == RegisterType::None;
-  }
-  else
-  {
-    return lhs.type == rhs.type && lhs.index == rhs.index;
-  }
+  return lhs.type == rhs.type && lhs.index == rhs.index;
 }
 
 bool operator!=(const RegisterID& lhs, const RegisterID& rhs)

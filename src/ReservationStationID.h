@@ -9,6 +9,8 @@
  */
 struct ReservationStationID
 {
+  static const ReservationStationID NONE;
+
   FunctionalUnitType type;
   std::size_t index;
 };

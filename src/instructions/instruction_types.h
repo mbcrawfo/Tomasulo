@@ -6,6 +6,7 @@
 
 enum class FunctionalUnitType
 {
+  None,
   Integer,
   Trap,
   Branch,
