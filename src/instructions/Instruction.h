@@ -7,7 +7,7 @@
 #include <ostream>
 
 class Instruction;
-using InstructionPtr = Ptr<Instruction>;
+using InstructionPtr = Pointer<Instruction>;
 
 enum class WriteAction
 {

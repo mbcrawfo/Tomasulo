@@ -19,11 +19,10 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
     instructionsInProgress(0),
     pc(0),
     memory(memory),
-    registerFile(),
-    renameRegFile()
+    registerFile(GPR_REGISTERS, FPR_REGISTERS),
+    renameRegisterFile()
 {
   assert(memory != nullptr);
-  renameRegFile[RegisterID::NONE] = ReservationStationID::NONE;  
 }
 
 bool Tomasulo::isHalted() const

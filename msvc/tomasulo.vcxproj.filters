@@ -48,6 +48,7 @@
     </ClCompile>
     <ClCompile Include="..\src\RegisterFile.cpp" />
     <ClCompile Include="..\src\ReservationStation.cpp" />
+    <ClCompile Include="..\src\RenameRegisterFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />

@@ -36,7 +36,7 @@ Data RegisterFile::read(const RegisterID& reg) const
 
 void RegisterFile::write(const RegisterID& reg, Data data)
 {
-  if (reg == RegisterID::NONE || reg == R0)
+  if (reg == RegisterID::NONE || reg == RegisterID::R0)
   {
     return;
   }

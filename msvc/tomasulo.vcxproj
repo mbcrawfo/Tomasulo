@@ -99,6 +99,7 @@
     <ClCompile Include="..\src\Memory.cpp" />
     <ClCompile Include="..\src\RegisterFile.cpp" />
     <ClCompile Include="..\src\RegisterID.cpp" />
+    <ClCompile Include="..\src\RenameRegisterFile.cpp" />
     <ClCompile Include="..\src\ReservationStation.cpp" />
     <ClCompile Include="..\src\ReservationStationID.cpp" />
     <ClCompile Include="..\src\Tomasulo.cpp" />

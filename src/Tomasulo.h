@@ -8,7 +8,7 @@
 #include "instructions/InstructionFactory.h"
 #include "instructions/Instruction.h"
 #include "RegisterFile.h"
-#include <unordered_map>
+#include "RenameRegisterFile.h"
 
 class Tomasulo
 {
@@ -25,7 +25,7 @@ private:
   // components
   MemoryPtr memory;
   RegisterFile registerFile;
-  std::unordered_map<RegisterID, ReservationStationID> renameRegFile;
+  RenameRegisterFile renameRegisterFile;
 
 public:
   explicit Tomasulo(MemoryPtr memory, bool verbose = false);

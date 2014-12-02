@@ -14,7 +14,7 @@ using UWord = uint32_t;
 
 using ByteBuffer = std::vector<Byte>;
 template<typename T>
-using Ptr = std::shared_ptr<T>;
+using Pointer = std::shared_ptr<T>;
 
 union Data
 {
