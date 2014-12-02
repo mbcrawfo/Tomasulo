@@ -40,10 +40,14 @@
     <ClCompile Include="..\src\instructions\instruction_types.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Decoder.cpp" />
     <ClCompile Include="..\src\instructions\IntegerInstruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\instructions\InstructionFactory.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RegisterFile.cpp" />
+    <ClCompile Include="..\src\ReservationStation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -60,12 +64,14 @@
     <ClInclude Include="..\src\instructions\instruction_types.h">
       <Filter>instructions</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Decoder.h" />
-    <ClInclude Include="..\src\instructions\InstructionData.h">
-      <Filter>instructions</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\instructions\IntegerInstruction.h">
       <Filter>instructions</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\instructions\InstructionFactory.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RegisterFile.h" />
+    <ClInclude Include="..\src\ReservationStation.h" />
+    <ClInclude Include="..\src\RenameRegisterFile.h" />
   </ItemGroup>
 </Project>

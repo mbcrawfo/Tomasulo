@@ -12,33 +12,18 @@ static const int FPR_REGISTERS = 32;
 
 Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
   : verbose(verbose),
+    iFactory(),
     halted(false),
     stallIssue(false),
     clockCounter(0),
     instructionsInProgress(0),
     pc(0),
-    decoder(),
     memory(memory),
-    archRegFile(),
+    registerFile(),
     renameRegFile()
 {
   assert(memory != nullptr);
-
-  Data data = { 0 };
-  archRegFile[RegisterID::NONE] = data;
-  renameRegFile[RegisterID::NONE] = ReservationStationID::NONE;
-  for (int i = 0; i < GPR_REGISTERS; ++i)
-  {
-    RegisterID gpr = { RegisterType::GPR, i };
-    archRegFile[gpr] = data;
-    renameRegFile[gpr] = ReservationStationID::NONE;
-  }
-  for (int i = 0; i < FPR_REGISTERS; ++i)
-  {
-    RegisterID fpr = { RegisterType::FPR, i };
-    archRegFile[fpr] = data;
-    renameRegFile[fpr] = ReservationStationID::NONE;
-  }
+  renameRegFile[RegisterID::NONE] = ReservationStationID::NONE;  
 }
 
 bool Tomasulo::isHalted() const
@@ -64,8 +49,10 @@ void Tomasulo::run(Address entryPoint)
     if (!halted)
     {
       UWord rawInstruction = memory->readUWord(pc);
-      InstructionData data = decoder.decode(rawInstruction);
-      if (issue(data) && !stallIssue)
+      InstructionPtr instr = iFactory.decode(rawInstruction);
+      assert(instr);
+
+      if (issue(instr) && !stallIssue)
       {
         pc += 4;
       }
@@ -73,19 +60,16 @@ void Tomasulo::run(Address entryPoint)
   }
 }
 
-bool Tomasulo::issue(const InstructionData& data)
+bool Tomasulo::issue(InstructionPtr instr)
 {
   // check for a halt
-  if (data.name == InstructionName::TRAP && data.immediate == 0)
+  if (instr->getName() == InstructionName::TRAP && instr->getImmediate() == 0)
   {
     halted = true;
     return true;
   }
 
-  Data arg1{{ 0 }};
-  ReservationStationID arg1Source = renameRegFile[data.rs1];
-  Data arg2{{ 0 }};
-  ReservationStationID arg2Source = renameRegFile[data.rs2];
+  return true;
 }
 
 void Tomasulo::execute()

@@ -5,57 +5,44 @@
 
 static const std::string TAG = "Instruction";
 
-Instruction::Instruction(std::size_t executeCycles, const InstructionArgs& args)
-  : arg1Ready(false),
-    arg1Source(args.arg1Source),    
-    arg2Ready(false),
-    arg2Source(args.arg2Source),
-    executeCycles(executeCycles),
-    arg1(args.arg1),
-    arg2(args.arg2),
-    result(),
-    data(data),
-    rsid(args.rsid)
+InstructionName Instruction::getName() const
 {
-  if (arg1Source == ReservationStationID::NONE)
-  {
-    arg1Ready = true;
-  }
-  if (arg2Source == ReservationStationID::NONE)
-  {
-    arg2Ready = true;
-  }
+  return name;
 }
 
-void Instruction::notify(const ReservationStationID& id, Data data)
+FunctionalUnitType Instruction::getType() const
 {
-  if (arg1Source == id)
-  {
-    arg1 = data;
-    arg1Ready = true;
-  }
-  if (arg2Source == id)
-  {
-    arg2 = data;
-    arg2Ready = true;
-  }
+  return type;
 }
 
-bool Instruction::argsReady() const
+RegisterID Instruction::getRd() const
 {
-  return arg1Ready && arg2Ready;
+  return rd;
 }
 
-bool Instruction::execute()
+RegisterID Instruction::getRs1() const
 {
-  executeCycles--;
-  if (executeCycles > 0)
-  {
-    return false;
-  }
-  else
-  {
-    performExecute();
-    return true;
-  }
+  return rs1;
+}
+
+RegisterID Instruction::getRs2() const
+{
+  return rs2;
+}
+
+UWord Instruction::getImmediate() const
+{
+  return immediate;
+}
+
+WriteAction Instruction::getWriteAction() const
+{
+  return WriteAction::None;
+}
+
+std::ostream& operator<<(std::ostream& os, const Instruction& data)
+{
+  os << data.name << " rd=" << data.rd << " rs1=" << data.rs1 << " rs2="
+    << data.rs2 << " imm=" << data.immediate;
+  return os;
 }

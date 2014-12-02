@@ -5,22 +5,26 @@
 #include "Memory.h"
 #include "RegisterID.h"
 #include "ReservationStationID.h"
-#include "Decoder.h"
-#include "instructions/InstructionData.h"
+#include "instructions/InstructionFactory.h"
+#include "instructions/Instruction.h"
+#include "RegisterFile.h"
 #include <unordered_map>
 
 class Tomasulo
 {
 private:
+  // general
   bool verbose;
+  InstructionFactory iFactory;
+  // machine state
   bool halted;
   bool stallIssue;
   std::size_t clockCounter;
   std::size_t instructionsInProgress;
   Address pc;
-  Decoder decoder;
+  // components
   MemoryPtr memory;
-  std::unordered_map<RegisterID, Data> archRegFile;
+  RegisterFile registerFile;
   std::unordered_map<RegisterID, ReservationStationID> renameRegFile;
 
 public:
@@ -32,7 +36,7 @@ public:
   void run(Address entryPoint = 0);
 
 private:
-  bool issue(const InstructionData& data);
+  bool issue(InstructionPtr instr);
   void execute();
   void write();
 };

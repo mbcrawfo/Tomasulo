@@ -1,26 +1,17 @@
 #include "instructions/IntegerInstruction.h"
+#include "log.h"
+#include <string>
 
-IntegerInstruction::IntegerInstruction(const InstructionArgs& args)
-  : Instruction(args)
-{}
+static const std::string TAG = "IntegerInstruction";
 
-Instruction::Result IntegerInstruction::write()
+Data IntegerInstruction::execute(Data arg1, Data arg2) const
 {
-  Result temp;
-  temp.dest = data.name == InstructionName::NOP ?
-    Result::Dest::None : Result::Dest::CDB;
-  temp.source = rsid;
-  temp.reg = data.rd;
-  temp.value = result;
-  return temp;
-}
+  Data result = { 0 };
 
-void IntegerInstruction::performExecute()
-{
-  switch (data.name)
+  switch (getName())
   {
   case InstructionName::ADDI:
-    result.w = arg1.w + static_cast<Word>(static_cast<int16_t>(data.immediate));
+    result.w = arg1.w + static_cast<Word>(static_cast<int16_t>(getImmediate()));
     break;
 
   case InstructionName::NOP:
@@ -53,7 +44,15 @@ void IntegerInstruction::performExecute()
     break;
 
   default:
-    logger->error("IntegerInstruction") << "Unknown instruction " << data.name;
+    logger->error(TAG) << "Unknown instruction " << getName();
     break;
   }
+
+  return result;
+}
+
+WriteAction IntegerInstruction::getWriteAction() const
+{
+  return getName() == InstructionName::NOP ?
+    WriteAction::None : WriteAction::Register;
 }

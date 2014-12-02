@@ -3,69 +3,45 @@
 
 #include "types.h"
 #include "RegisterID.h"
-#include "ReservationStationID.h"
 #include "instructions/instruction_types.h"
-#include "instructions/InstructionData.h"
-#include <memory>
+#include <ostream>
 
-struct InstructionArgs
+class Instruction;
+using InstructionPtr = Ptr<Instruction>;
+
+enum class WriteAction
 {
-  ReservationStationID rsid;
-  InstructionData data;
-  Data arg1;
-  ReservationStationID arg1Source;
-  Data arg2;
-  ReservationStationID arg2Source;
+  None,
+  Register,
+  PC,
+  Memory
 };
 
 class Instruction
 {
-private:  
-  bool arg1Ready;
-  const ReservationStationID arg1Source;  
-  bool arg2Ready;
-  const ReservationStationID arg2Source;
-  std::size_t executeCycles;
-
-protected:  
-  Data arg1;
-  Data arg2;
-  Data result;
+private:
+  InstructionName name;
+  FunctionalUnitType type;
+  RegisterID rd;
+  RegisterID rs1;
+  RegisterID rs2;
+  UWord immediate;
 
 public:
-  const InstructionData data;
-  const ReservationStationID rsid;
+  Instruction() = default;
 
-  struct Result
-  {
-    enum Dest
-    {
-      None,
-      CDB,
-      PC
-    };
+  InstructionName getName() const;
+  FunctionalUnitType getType() const;
+  RegisterID getRd() const;
+  RegisterID getRs1() const;
+  RegisterID getRs2() const;
+  UWord getImmediate() const;
 
-    Dest dest;
-    ReservationStationID source;
-    RegisterID reg;
-    Data value;
-  };
+  virtual Data execute(Data arg1, Data arg2) const = 0;
+  virtual WriteAction getWriteAction() const;
 
-  Instruction() = delete;
-  Instruction(std::size_t executeCycles, const InstructionArgs& args);
-  Instruction(const Instruction&) = delete;
-  Instruction& operator=(const Instruction&) = delete;
-
-  void notify(const ReservationStationID& id, Data data);
-  bool argsReady() const;
-
-  bool execute();
-  virtual Result write() = 0;
-
-protected:
-  virtual void performExecute() = 0;
+  friend class InstructionFactory;
+  friend std::ostream& operator<<(std::ostream& os, const Instruction& data);
 };
-
-using StrongInstructionPtr = std::shared_ptr<Instruction>;
 
 #endif

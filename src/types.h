@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 using Address = uint32_t;
 using Byte = uint8_t;
@@ -10,7 +11,10 @@ using HalfWord = int16_t;
 using UHalfWord = uint16_t;
 using Word = int32_t;
 using UWord = uint32_t;
+
 using ByteBuffer = std::vector<Byte>;
+template<typename T>
+using Ptr = std::shared_ptr<T>;
 
 union Data
 {

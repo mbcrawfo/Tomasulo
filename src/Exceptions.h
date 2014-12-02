@@ -2,12 +2,13 @@
 #define __EXCEPTION_H__
 
 #include "types.h"
+#include "RegisterID.h"
 #include "utility/IToString.h"
 #include <exception>
 #include <string>
 
 /**
- * The base for for the exception heirarchy.
+ * The base for for the exception hierarchy.
  */
 class Exception
   : public std::exception, public util::IToString
@@ -33,6 +34,16 @@ class InvalidAddressException
 {
 public:
   InvalidAddressException(Address addr, std::size_t size, std::size_t memSize);
+};
+
+/**
+ * Non-existing register access.
+ */
+class InvalidRegisterException
+  : public Exception
+{
+public:
+  InvalidRegisterException(const RegisterID& reg);
 };
 
 #endif

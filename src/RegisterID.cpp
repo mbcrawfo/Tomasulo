@@ -4,6 +4,7 @@ const RegisterID RegisterID::NONE = {
   static_cast<RegisterType>(-1),
   static_cast<std::size_t>(-1)
 };
+const RegisterID RegisterID::R0 = { RegisterType::GPR, 0 };
 
 std::ostream& operator<<(std::ostream& os, const RegisterID& reg)
 {

@@ -2,18 +2,13 @@
 #define __INTEGERINSTRUCTION_H__
 
 #include "instructions/Instruction.h"
-#include "log.h"
 
 class IntegerInstruction
   : public Instruction
 {
 public:
-  IntegerInstruction(const InstructionArgs& args);
-
-  virtual Result write() override;
-
-protected:
-  virtual void performExecute() override;
+  virtual Data execute(Data arg1, Data arg2) const override;
+  virtual WriteAction getWriteAction() const override;
 };
 
 #endif

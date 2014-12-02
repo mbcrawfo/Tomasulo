@@ -31,3 +31,11 @@ InvalidAddressException::InvalidAddressException(Address addr, std::size_t size,
     << memSize << " bytes";
   msg = os.str();
 }
+
+InvalidRegisterException::InvalidRegisterException(const RegisterID& reg)
+  : Exception()
+{
+  std::ostringstream os;
+  os << "Unknown register access: " << reg;
+  msg = os.str();
+}

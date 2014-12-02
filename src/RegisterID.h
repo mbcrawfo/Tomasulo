@@ -16,6 +16,7 @@ enum class RegisterType
 struct RegisterID
 {
   static const RegisterID NONE;
+  static const RegisterID R0;
 
   RegisterType type;
   std::size_t index;
