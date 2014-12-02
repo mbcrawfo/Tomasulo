@@ -31,7 +31,7 @@ struct RegisterIDHash
 {
   std::size_t operator()(const RegisterID& reg)
   {
-    auto typeHash = std::hash<RegisterType>()(reg.type);
+    auto typeHash = std::hash<std::size_t>()(static_cast<std::size_t>(reg.type));
     auto indexHash = std::hash<std::size_t>()(reg.index);
     return typeHash ^ indexHash;
   }
