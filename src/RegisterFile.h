@@ -11,7 +11,7 @@ using RegisterFilePtr = Pointer<RegisterFile>;
 class RegisterFile
 {
 private:
-  std::unordered_map<RegisterID, Data> registers;
+  std::unordered_map<RegisterID, Data, RegisterIDHash> registers;
 
 public:
   RegisterFile() = delete;

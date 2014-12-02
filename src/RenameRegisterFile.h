@@ -12,7 +12,8 @@ using RenameRegisterFilePtr = Pointer<RenameRegisterFile>;
 class RenameRegisterFile
 {
 private:
-  std::unordered_map<RegisterID, ReservationStationID> renameRegisters;
+  std::unordered_map<RegisterID, ReservationStationID, RegisterIDHash> 
+    renameRegisters;
 
 public:
   RenameRegisterFile();

@@ -3,6 +3,7 @@
 
 #include "instructions/instruction_types.h"
 #include <ostream>
+#include <functional>
 
 /**
  * Identifies a reservation station by type and index.
@@ -21,10 +22,7 @@ bool operator==(const ReservationStationID& lhs,
 bool operator!=(const ReservationStationID& lhs,
   const ReservationStationID& rhs);
 
-namespace std
-{
-template<>
-struct hash<ReservationStationID>
+struct ReservationStationIDHash
 {
   std::size_t operator()(const ReservationStationID& rsid)
   {
@@ -33,6 +31,5 @@ struct hash<ReservationStationID>
     return typeHash ^ indexHash;
   }
 };
-}
 
 #endif

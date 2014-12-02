@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include <ostream>
+#include <functional>
 
 enum class RegisterType
 {
@@ -26,10 +27,7 @@ std::ostream& operator<<(std::ostream& os, const RegisterID& reg);
 bool operator==(const RegisterID& lhs, const RegisterID& rhs);
 bool operator!=(const RegisterID& lhs, const RegisterID& rhs);
 
-namespace std
-{
-template<>
-struct hash<RegisterID>
+struct RegisterIDHash
 {
   std::size_t operator()(const RegisterID& reg)
   {
@@ -38,6 +36,5 @@ struct hash<RegisterID>
     return typeHash ^ indexHash;
   }
 };
-}
 
 #endif
