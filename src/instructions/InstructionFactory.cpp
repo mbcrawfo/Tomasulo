@@ -1,10 +1,26 @@
 #include "InstructionFactory.h"
 #include "log.h"
 #include "instructions/IntegerInstruction.h"
+#include "instructions/TrapInstruction.h"
 #include "utility/stream_manip.h"
 #include <string>
+#include <cassert>
 
 static const std::string TAG = "InstructionFactory";
+
+InstructionFactory::InstructionFactory(MemoryPtr memory,
+  RegisterFilePtr registers)
+  : memory(memory),
+    registers(registers),
+    instruction(),
+    name(),
+    encodingType(),
+    fuType(),
+    result()
+{
+  assert(memory != nullptr);
+  assert(registers != nullptr);
+}
 
 InstructionPtr InstructionFactory::decode(UWord rawInstruction)
 {
@@ -51,6 +67,10 @@ void InstructionFactory::createInstruction()
     result = InstructionPtr(new IntegerInstruction);
     break;
 
+  case FunctionalUnitType::Trap:
+    result = InstructionPtr(new TrapInstruction(memory, registers));
+    break;
+
   default:
     logger->error(TAG) << fuType << " not implemented";
     return;
@@ -93,6 +113,7 @@ void InstructionFactory::setRegisterTypes()
   {
     // trap is a special case
   case InstructionName::TRAP:
+    result->rd = RegisterID::NONE;
     if (result->immediate == 2)
     {
       result->rs1.type = RegisterType::FPR;

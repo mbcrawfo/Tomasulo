@@ -22,7 +22,7 @@ Data IntegerInstruction::execute(Data arg1, Data arg2) const
     break;
 
   case InstructionName::SUB:
-    result.w = arg1.w * arg2.w;
+    result.w = arg1.w - arg2.w;
     break;
 
   case InstructionName::AND:

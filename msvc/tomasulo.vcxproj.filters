@@ -49,6 +49,10 @@
     <ClCompile Include="..\src\RegisterFile.cpp" />
     <ClCompile Include="..\src\ReservationStation.cpp" />
     <ClCompile Include="..\src\RenameRegisterFile.cpp" />
+    <ClCompile Include="..\src\CommonDataBus.cpp" />
+    <ClCompile Include="..\src\instructions\TrapInstruction.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -74,5 +78,9 @@
     <ClInclude Include="..\src\RegisterFile.h" />
     <ClInclude Include="..\src\ReservationStation.h" />
     <ClInclude Include="..\src\RenameRegisterFile.h" />
+    <ClInclude Include="..\src\CommonDataBus.h" />
+    <ClInclude Include="..\src\instructions\TrapInstruction.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

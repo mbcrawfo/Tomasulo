@@ -89,6 +89,18 @@ float Memory::readFloat(Address addr) const
   return t.f;
 }
 
+std::string Memory::readString(Address addr) const
+{
+  auto end = std::find(mem.begin() + addr, mem.end(), '\0');
+  if (end == mem.end())
+  {
+    logger->error(TAG) << "End of string not found for address "
+      << util::hex<Address> << addr;
+  }
+
+  return std::string(mem.begin() + addr, end);
+}
+
 void Memory::write(Address addr, const ByteBuffer& bytes)
 {
   if (addr + bytes.size() >= size())

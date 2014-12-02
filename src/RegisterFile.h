@@ -5,6 +5,9 @@
 #include "RegisterID.h"
 #include <unordered_map>
 
+class RegisterFile;
+using RegisterFilePtr = Pointer<RegisterFile>;
+
 class RegisterFile
 {
 private:

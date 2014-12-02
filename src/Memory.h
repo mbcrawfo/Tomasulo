@@ -41,6 +41,7 @@ public:
   Word readWord(Address addr) const;
   UWord readUWord(Address addr) const;
   float readFloat(Address addr) const;
+  std::string readString(Address addr) const;
 
   /**
    * Writes a buffer or type to memory.

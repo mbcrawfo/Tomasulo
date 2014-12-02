@@ -89,12 +89,14 @@
     <ClCompile Include="..\deps\cpp-utils\src\log\LogMessage.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\LogWriter.cpp" />
     <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp" />
+    <ClCompile Include="..\src\CommonDataBus.cpp" />
     <ClCompile Include="..\src\Exceptions.cpp" />
     <ClCompile Include="..\src\FunctionalUnit.cpp" />
     <ClCompile Include="..\src\instructions\Instruction.cpp" />
     <ClCompile Include="..\src\instructions\InstructionFactory.cpp" />
     <ClCompile Include="..\src\instructions\instruction_types.cpp" />
     <ClCompile Include="..\src\instructions\IntegerInstruction.cpp" />
+    <ClCompile Include="..\src\instructions\TrapInstruction.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Memory.cpp" />
     <ClCompile Include="..\src\RegisterFile.cpp" />
@@ -105,12 +107,14 @@
     <ClCompile Include="..\src\Tomasulo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\CommonDataBus.h" />
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\FunctionalUnit.h" />
     <ClInclude Include="..\src\instructions\Instruction.h" />
     <ClInclude Include="..\src\instructions\InstructionFactory.h" />
     <ClInclude Include="..\src\instructions\instruction_types.h" />
     <ClInclude Include="..\src\instructions\IntegerInstruction.h" />
+    <ClInclude Include="..\src\instructions\TrapInstruction.h" />
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\Memory.h" />
     <ClInclude Include="..\src\RegisterFile.h" />

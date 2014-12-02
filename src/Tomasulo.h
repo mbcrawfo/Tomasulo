@@ -3,29 +3,30 @@
 
 #include "types.h"
 #include "Memory.h"
-#include "RegisterID.h"
-#include "ReservationStationID.h"
 #include "instructions/InstructionFactory.h"
-#include "instructions/Instruction.h"
 #include "RegisterFile.h"
 #include "RenameRegisterFile.h"
+#include "CommonDataBus.h"
+#include "FunctionalUnit.h"
+#include <unordered_map>
 
 class Tomasulo
 {
 private:
   // general
   bool verbose;
-  InstructionFactory iFactory;
+  InstructionFactoryPtr instructionFactory;
   // machine state
   bool halted;
   bool stallIssue;
   std::size_t clockCounter;
-  std::size_t instructionsInProgress;
   Address pc;
   // components
   MemoryPtr memory;
-  RegisterFile registerFile;
-  RenameRegisterFile renameRegisterFile;
+  RegisterFilePtr registerFile;
+  RenameRegisterFilePtr renameRegisterFile;
+  CommonDataBusPtr commonDataBus;
+  std::unordered_map<FunctionalUnitType, FunctionalUnitPtr> functionalUnits;
 
 public:
   explicit Tomasulo(MemoryPtr memory, bool verbose = false);
@@ -39,6 +40,7 @@ private:
   bool issue(InstructionPtr instr);
   void execute();
   void write();
+  bool functionalUnitsIdle() const;
 };
 
 #endif

@@ -1,9 +1,24 @@
 #include "ReservationStation.h"
 #include "log.h"
+#include "utility/stream_manip.h"
 #include <string>
 #include <cassert>
 
 static const std::string TAG = "ReservationStation";
+
+ReservationStationDependencies::ReservationStationDependencies(
+  RegisterFilePtr registers, 
+  RenameRegisterFilePtr renameRegisters, 
+  MemoryPtr memory, 
+  std::size_t& pc,
+  CommonDataBusPtr cdb)
+  : registers(registers),
+    renameRegisters(renameRegisters),
+    memory(memory),
+    pc(pc),
+    cdb(cdb)
+{
+}
 
 ReservationStation::ReservationStation(const ReservationStationID& id,
   const std::size_t executeCycles, ReservationStationDependencies deps)
@@ -53,6 +68,17 @@ void ReservationStation::setInstruction(InstructionPtr instr)
     state = ReservationStationState::ReadyToExecute;
     logger->debug(TAG) << id << " has all args";
   }
+  else
+  {
+    deps.cdb->addListener(this);
+    state = ReservationStationState::WaitingForArgs;
+  }
+
+  if (instruction->getRd() != RegisterID::NONE &&
+    instruction->getRd() != RegisterID::R0)
+  {
+    deps.renameRegisters->rename(instruction->getRd(), id);
+  }
 }
 
 void ReservationStation::clearInstruction()
@@ -94,6 +120,10 @@ void ReservationStation::write()
     break;
 
   case WriteAction::Register:
+    if (deps.cdb->set(id, instruction->getRd(), result))
+    {
+      state = ReservationStationState::WriteComplete;
+    }
     break;
 
   case WriteAction::PC:
@@ -106,28 +136,33 @@ void ReservationStation::write()
   }
 }
 
-void ReservationStation::notify(const ReservationStationID& rsid, Data value)
+bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
 {
   if (!arg1Ready && rsid == arg1Source)
   {
     arg1 = value;
     arg1Ready = true;
     arg1Source = ReservationStationID::NONE;
-    logger->debug(TAG) << id << " captured rs1 from " << rsid;
+    logger->debug(TAG) << id << " captured rs1=" << util::hex<UWord> << arg1.uw
+      << " from " << rsid;
   }
   if (!arg2Ready && rsid == arg2Source)
   {
     arg2 = value;
     arg2Ready = true;
     arg2Source = ReservationStationID::NONE;
-    logger->debug(TAG) << id << " captured rs2 from " << rsid;
+    logger->debug(TAG) << id << " captured rs2=" << util::hex<UWord> << arg2.uw
+      << " from " << rsid;
   }
 
   if (arg1Ready && arg2Ready)
   {
     state = ReservationStationState::ReadyToExecute;
     logger->debug(TAG) << id << " has all args";
+    return true;
   }
+
+  return false;
 }
 
 void ReservationStation::setArgSources()
@@ -139,7 +174,7 @@ void ReservationStation::setArgSources()
   }
   else
   {
-    auto rename = deps.renameRegisters.getRenaming(rs1);
+    auto rename = deps.renameRegisters->getRenaming(rs1);
     if (rename != ReservationStationID::NONE)
     {
       arg1Source = rename;
@@ -147,9 +182,10 @@ void ReservationStation::setArgSources()
     }
     else
     {
-      arg1 = deps.registers.read(rs1);
+      arg1 = deps.registers->read(rs1);
       arg1Ready = true;
-      logger->debug(TAG) << "Read rs1 from " << rs1;
+      logger->debug(TAG) << "Read rs1=" << util::hex<UWord> << arg1.uw
+        << " from " << rs1;
     }
   }
 
@@ -160,7 +196,7 @@ void ReservationStation::setArgSources()
   }
   else
   {
-    auto rename = deps.renameRegisters.getRenaming(rs2);
+    auto rename = deps.renameRegisters->getRenaming(rs2);
     if (rename != ReservationStationID::NONE)
     {
       arg2Source = rename;
@@ -168,9 +204,10 @@ void ReservationStation::setArgSources()
     }
     else
     {
-      arg2 = deps.registers.read(rs2);
+      arg2 = deps.registers->read(rs2);
       arg2Ready = true;
-      logger->debug(TAG) << "Read rs2 from " << rs2;
+      logger->debug(TAG) << "Read rs2=" << util::hex<UWord> << arg2.uw
+        << " from " << rs1;
     }
   }
 }

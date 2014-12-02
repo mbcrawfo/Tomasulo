@@ -7,9 +7,7 @@
 #include "RenameRegisterFile.h"
 #include "instructions/Instruction.h"
 #include "Memory.h"
-
-class ReservationStation;
-using ReservationStationPtr = Pointer<ReservationStation>;
+#include "CommonDataBus.h"
 
 enum class ReservationStationState
 {
@@ -24,10 +22,20 @@ enum class ReservationStationState
 
 struct ReservationStationDependencies
 {
-  RegisterFile& registers;
-  RenameRegisterFile& renameRegisters;
-  Memory& memory;
+  ReservationStationDependencies(RegisterFilePtr registers,
+    RenameRegisterFilePtr renameRegisters,
+    MemoryPtr memory,
+    std::size_t& pc,
+    CommonDataBusPtr cdb
+    );
+  ReservationStationDependencies& operator=(ReservationStationDependencies&) 
+    = delete;
+
+  RegisterFilePtr registers;
+  RenameRegisterFilePtr renameRegisters;
+  MemoryPtr memory;
   std::size_t& pc;
+  CommonDataBusPtr cdb;
 };
 
 class ReservationStation
@@ -65,7 +73,7 @@ public:
   void setIsWriting();
   void write();
 
-  void notify(const ReservationStationID& rsid, Data value);
+  bool notify(const ReservationStationID& rsid, Data value);
 
 private:
   void setArgSources();

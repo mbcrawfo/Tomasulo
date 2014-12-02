@@ -26,4 +26,9 @@ union Data
   float f;
 };
 
+// sticking this here to break a circular dependency between
+// ReservationStation.h and CommonDataBus.h
+class ReservationStation;
+using ReservationStationPtr = Pointer<ReservationStation>;
+
 #endif
