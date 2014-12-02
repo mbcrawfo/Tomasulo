@@ -26,7 +26,7 @@ struct ReservationStationIDHash
 {
   std::size_t operator()(const ReservationStationID& rsid)
   {
-    auto typeHash = std::hash<FunctionalUnitType>()(rsid.type);
+    auto typeHash = std::hash<std::size_t>()(static_cast<std::size_t>(rsid.type));
     auto indexHash = std::hash<std::size_t>()(rsid.index);
     return typeHash ^ indexHash;
   }
