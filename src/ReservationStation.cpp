@@ -10,7 +10,7 @@ ReservationStationDependencies::ReservationStationDependencies(
   RegisterFilePtr registers, 
   RenameRegisterFilePtr renameRegisters, 
   MemoryPtr memory, 
-  std::size_t& pc,
+  Address& pc,
   CommonDataBusPtr cdb)
   : registers(registers),
     renameRegisters(renameRegisters),
@@ -21,7 +21,7 @@ ReservationStationDependencies::ReservationStationDependencies(
 }
 
 ReservationStation::ReservationStation(const ReservationStationID& id,
-  const std::size_t executeCycles, ReservationStationDependencies deps)
+  const std::size_t executeCycles, ReservationStationDependencies& deps)
   : id(id),
     deps(deps),
     instruction(nullptr),

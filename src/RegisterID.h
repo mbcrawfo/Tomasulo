@@ -29,7 +29,7 @@ bool operator!=(const RegisterID& lhs, const RegisterID& rhs);
 
 struct RegisterIDHash
 {
-  std::size_t operator()(const RegisterID& reg)
+  std::size_t operator()(const RegisterID& reg) const
   {
     auto typeHash = std::hash<std::size_t>()(static_cast<std::size_t>(reg.type));
     auto indexHash = std::hash<std::size_t>()(reg.index);

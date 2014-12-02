@@ -124,6 +124,15 @@ void InstructionFactory::setRegisterTypes()
     }
     break;
 
+    // none
+  case InstructionName::NOP:
+  case InstructionName::J:
+  case InstructionName::JAL:
+    result->rd = RegisterID::NONE;
+    result->rs1 = RegisterID::NONE;
+    result->rs2 = RegisterID::NONE;
+    break;
+
     // GPR rs1 only
   case InstructionName::BEQZ:
   case InstructionName::JR:

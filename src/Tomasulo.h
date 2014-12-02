@@ -26,7 +26,8 @@ private:
   RegisterFilePtr registerFile;
   RenameRegisterFilePtr renameRegisterFile;
   CommonDataBusPtr commonDataBus;
-  std::unordered_map<FunctionalUnitType, FunctionalUnitPtr> functionalUnits;
+  std::unordered_map<FunctionalUnitType, FunctionalUnitPtr, FunctionalUnitTypeHash>
+    functionalUnits;
 
 public:
   explicit Tomasulo(MemoryPtr memory, bool verbose = false);

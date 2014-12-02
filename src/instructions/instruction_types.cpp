@@ -163,6 +163,8 @@ std::ostream& operator<<(std::ostream& os, FunctionalUnitType type)
 {
   switch (type)
   {
+  case FunctionalUnitType::None:
+    os << "None";
   case FunctionalUnitType::Integer:
     os << "Integer";
     break;

@@ -25,7 +25,7 @@ struct ReservationStationDependencies
   ReservationStationDependencies(RegisterFilePtr registers,
     RenameRegisterFilePtr renameRegisters,
     MemoryPtr memory,
-    std::size_t& pc,
+    Address& pc,
     CommonDataBusPtr cdb
     );
   ReservationStationDependencies& operator=(ReservationStationDependencies&) 
@@ -34,7 +34,7 @@ struct ReservationStationDependencies
   RegisterFilePtr registers;
   RenameRegisterFilePtr renameRegisters;
   MemoryPtr memory;
-  std::size_t& pc;
+  Address& pc;
   CommonDataBusPtr cdb;
 };
 
@@ -59,7 +59,7 @@ private:
 public:
   ReservationStation() = delete;
   ReservationStation(const ReservationStationID& id, 
-    const std::size_t executeCycles, ReservationStationDependencies deps);
+    const std::size_t executeCycles, ReservationStationDependencies& deps);
   ReservationStation& operator=(ReservationStation&) = delete;
 
   ReservationStationID getID() const;

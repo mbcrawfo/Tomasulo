@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include <ostream>
+#include <functional>
 
 enum class FunctionalUnitType
 {
@@ -65,5 +66,13 @@ extern FunctionalUnitType getInstructionType(InstructionName name);
 std::ostream& operator<<(std::ostream& os, FunctionalUnitType type);
 std::ostream& operator<<(std::ostream& os, InstructionEncodingType type);
 std::ostream& operator<<(std::ostream& os, InstructionName name);
+
+struct FunctionalUnitTypeHash
+{
+  std::size_t operator()(FunctionalUnitType type) const
+  {
+    return std::hash<std::size_t>()(static_cast<std::size_t>(type));
+  }
+};
 
 #endif

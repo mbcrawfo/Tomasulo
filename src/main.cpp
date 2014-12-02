@@ -257,7 +257,7 @@ bool loadFromFile(Memory& mem, const std::string& filename)
     // find the hex data string after the colon
     auto start = line.find_first_of(HEX_DIGIT, colon + 1);
     auto end = line.find_last_of(HEX_DIGIT);
-    is = std::istringstream(line.substr(start, end - start + 1));
+    is.str(line.substr(start, end - start + 1));
     //logger->verbose(TAG, is.str());
 
     ByteBuffer buffer;

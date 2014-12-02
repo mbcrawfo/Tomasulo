@@ -26,7 +26,7 @@ public:
   /**
    * Return the number of bytes in the memory.
    */
-  uint32_t size() const;
+  std::size_t size() const;
 
   /**
    * Clears the full memory to zero.

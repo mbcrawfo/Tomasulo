@@ -24,7 +24,7 @@ bool operator!=(const ReservationStationID& lhs,
 
 struct ReservationStationIDHash
 {
-  std::size_t operator()(const ReservationStationID& rsid)
+  std::size_t operator()(const ReservationStationID& rsid) const
   {
     auto typeHash = std::hash<std::size_t>()(static_cast<std::size_t>(rsid.type));
     auto indexHash = std::hash<std::size_t>()(rsid.index);
