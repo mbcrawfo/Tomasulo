@@ -246,18 +246,20 @@ bool loadFromFile(Memory& mem, const std::string& filename)
       continue;
     }
 
-    std::istringstream is;
 
-    // pull the address
     Address addr;
-    is.str(line.substr(0, colon));
-    is >> std::hex >> addr;
-    //logger->verbose(TAG) << "Address: " << util::hex<Address> << addr;
+    {
+      // pull the address
+      std::istringstream is;
+      is.str(line.substr(0, colon));
+      is >> std::hex >> addr;
+      //logger->verbose(TAG) << "Address: " << util::hex<Address> << addr;
+    }
 
     // find the hex data string after the colon
     auto start = line.find_first_of(HEX_DIGIT, colon + 1);
     auto end = line.find_last_of(HEX_DIGIT);
-    is.str(line.substr(start, end - start + 1));
+    std::istringstream is(line.substr(start, end - start + 1));
     //logger->verbose(TAG, is.str());
 
     ByteBuffer buffer;
