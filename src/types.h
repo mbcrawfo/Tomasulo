@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <functional>
 
 using Address = uint32_t;
 using Byte = uint8_t;

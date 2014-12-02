@@ -4,6 +4,7 @@
 #include "types.h"
 #include "RegisterID.h"
 #include "utility/IToString.h"
+#include "platform.h"
 #include <exception>
 #include <string>
 
@@ -20,9 +21,22 @@ public:
   Exception() = default;
   Exception(const std::string& msg);
   Exception& operator=(const Exception&) = default;
-  virtual ~Exception() throw();
 
-  virtual const char* what() const override;
+  // I hate msvc
+#if LU_COMPILER == LU_COMPILER_MSVC
+  virtual ~Exception() throw() {}
+  virtual const char* what() const override
+  {
+    return msg.c_str();
+  }
+#else
+  virtual ~Exception() noexcept {}
+  virtual const char* what() const noexcept override
+  {
+    return msg.c_str();
+  }
+#endif
+
   virtual std::string toString() const override;
 };
 

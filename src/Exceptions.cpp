@@ -7,15 +7,6 @@ Exception::Exception(const std::string& msg)
 {
 }
 
-Exception::~Exception() throw()
-{
-}
-
-const char* Exception::what() const
-{
-  return msg.c_str();
-}
-
 std::string Exception::toString() const
 {
   return msg;
