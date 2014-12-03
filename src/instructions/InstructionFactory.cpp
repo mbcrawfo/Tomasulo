@@ -2,6 +2,7 @@
 #include "log.h"
 #include "instructions/IntegerInstruction.h"
 #include "instructions/TrapInstruction.h"
+#include "instructions/BranchInstruction.h"
 #include "instructions/MemoryInstruction.h"
 #include "instructions/FloatingPointInstruction.h"
 #include "utility/stream_manip.h"
@@ -10,9 +11,10 @@
 
 static const std::string TAG = "InstructionFactory";
 
-InstructionFactory::InstructionFactory(MemoryPtr memory,
+InstructionFactory::InstructionFactory(Address& pc, MemoryPtr memory,
   RegisterFilePtr registers)
-  : memory(memory),
+  : pc(pc),
+    memory(memory),
     registers(registers),
     instruction(),
     name(),
@@ -72,6 +74,10 @@ void InstructionFactory::createInstruction()
 
   case FunctionalUnitType::Trap:
     result = InstructionPtr(new TrapInstruction(memory, registers));
+    break;
+
+  case FunctionalUnitType::Branch:
+    result = InstructionPtr(new BranchInstruction(pc + 4));
     break;
 
   case FunctionalUnitType::Memory:

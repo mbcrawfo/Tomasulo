@@ -92,6 +92,7 @@
     <ClCompile Include="..\src\CommonDataBus.cpp" />
     <ClCompile Include="..\src\Exceptions.cpp" />
     <ClCompile Include="..\src\FunctionalUnit.cpp" />
+    <ClCompile Include="..\src\instructions\BranchInstruction.cpp" />
     <ClCompile Include="..\src\instructions\FloatingPointInstruction.cpp" />
     <ClCompile Include="..\src\instructions\Instruction.cpp" />
     <ClCompile Include="..\src\instructions\InstructionFactory.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="..\src\CommonDataBus.h" />
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\FunctionalUnit.h" />
+    <ClInclude Include="..\src\instructions\BranchInstruction.h" />
     <ClInclude Include="..\src\instructions\FloatingPointInstruction.h" />
     <ClInclude Include="..\src\instructions\Instruction.h" />
     <ClInclude Include="..\src\instructions\InstructionFactory.h" />

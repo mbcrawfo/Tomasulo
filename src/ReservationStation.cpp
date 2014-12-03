@@ -1,4 +1,5 @@
 #include "ReservationStation.h"
+#include "instructions/BranchInstruction.h"
 #include "log.h"
 #include "utility/stream_manip.h"
 #include <string>
@@ -12,11 +13,13 @@ ReservationStationDependencies::ReservationStationDependencies(
   RenameRegisterFilePtr renameRegisters, 
   MemoryPtr memory, 
   Address& pc,
+  bool& pcStall,
   CommonDataBusPtr cdb)
   : registers(registers),
     renameRegisters(renameRegisters),
     memory(memory),
     pc(pc),
+    pcStall(pcStall),
     cdb(cdb)
 {
 }
@@ -148,8 +151,23 @@ void ReservationStation::write()
     break;
 
   case WriteAction::PC:
-    //deps.pc = result.uw;
-    //state = ReservationStationState::WriteComplete;
+    deps.pc = result.uw;
+    deps.pcStall = false;
+    state = ReservationStationState::WriteComplete;
+    logger->debug(TAG) << id << " updated PC to "
+      << util::hex<UWord> << result.uw << ", removing issue stall";
+    break;
+
+  case WriteAction::PC_R31:
+  {
+    // I hate this, but not enough to redesign half the program
+    auto bInstr = std::dynamic_pointer_cast<BranchInstruction>(instruction);
+    assert(bInstr);
+    // change the result to the return address so the cdb can write it
+    // pc will change on the write notification
+    result.uw = bInstr->getNextInstruction();
+    deps.cdb->write(this);
+  }
     break;
 
   case WriteAction::Memory:
@@ -243,6 +261,16 @@ void ReservationStation::notifyWriteAccepted()
 {
   assert(state == ReservationStationState::Writing);
   state = ReservationStationState::WriteComplete;
+
+  if (instruction->getType() == FunctionalUnitType::Branch)
+  {
+    auto bInstr = std::dynamic_pointer_cast<BranchInstruction>(instruction);
+    assert(bInstr);
+    deps.pc = bInstr->getTarget();
+    deps.pcStall = false;
+    logger->debug(TAG) << id << " updated PC to "
+      << util::hex<UWord> << bInstr->getTarget() << ", removing issue stall";
+  }
 }
 
 void ReservationStation::setArgSources()

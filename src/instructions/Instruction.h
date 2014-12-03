@@ -14,6 +14,7 @@ enum class WriteAction
   None,
   Register,
   PC,
+  PC_R31,
   Memory
 };
 

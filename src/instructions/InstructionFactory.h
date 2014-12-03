@@ -11,6 +11,7 @@ using InstructionFactoryPtr = Pointer<InstructionFactory>;
 class InstructionFactory
 {
 private:
+  Address& pc;
   MemoryPtr memory;
   RegisterFilePtr registers;
 
@@ -21,7 +22,9 @@ private:
   InstructionPtr result;
 
 public:
-  explicit InstructionFactory(MemoryPtr memory, RegisterFilePtr registers);
+  explicit InstructionFactory(Address& pc, MemoryPtr memory,
+    RegisterFilePtr registers);
+  InstructionFactory& operator=(InstructionFactory&) = delete;
 
   InstructionPtr decode(UWord rawInstruction);
 

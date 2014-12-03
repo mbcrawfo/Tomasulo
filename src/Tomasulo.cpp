@@ -21,6 +21,10 @@ static const int TRAP_CYCLES = 1;
 static const int TRAP_STATIONS = 4;
 static const int TRAP_UNITS = 1;
 
+static const int BRANCH_CYCLES = 1;
+static const int BRANCH_STATIONS = 1;
+static const int BRANCH_UNITS = 1;
+
 static const int MEMORY_CYCLES = 2;
 static const int MEMORY_STATIONS = 8;
 static const int MEMORY_UNITS = 1;
@@ -52,12 +56,12 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
     new CommonDataBus(registerFile, renameRegisterFile)
     );
   instructionFactory = InstructionFactoryPtr(
-    new InstructionFactory(memory, registerFile)
+    new InstructionFactory(pc, memory, registerFile)
     );
 
   // create all functional units
   ReservationStationDependencies deps(
-    registerFile, renameRegisterFile, memory, pc, commonDataBus
+    registerFile, renameRegisterFile, memory, pc, stallIssue, commonDataBus
     );
   functionalUnits[FunctionalUnitType::Integer] = 
     FunctionalUnitPtr(
@@ -71,6 +75,13 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
       new FunctionalUnit(
         FunctionalUnitType::Trap, true, TRAP_CYCLES,
         TRAP_STATIONS, TRAP_UNITS, deps
+        )
+    );
+  functionalUnits[FunctionalUnitType::Branch] =
+    FunctionalUnitPtr(
+      new FunctionalUnit(
+        FunctionalUnitType::Branch, true, BRANCH_CYCLES,
+        BRANCH_STATIONS, BRANCH_UNITS, deps
         )
     );
   functionalUnits[FunctionalUnitType::Memory] =
@@ -150,7 +161,14 @@ void Tomasulo::issue()
 
     if (advancePC)
     {
-      pc += 4;
+      if (instruction->getType() == FunctionalUnitType::Branch)
+      {
+        stallIssue = true;
+      }
+      else
+      {
+        pc += 4;
+      }
     }
     else
     {

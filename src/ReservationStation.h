@@ -26,6 +26,7 @@ struct ReservationStationDependencies
     RenameRegisterFilePtr renameRegisters,
     MemoryPtr memory,
     Address& pc,
+    bool& pcStall,
     CommonDataBusPtr cdb
     );
   ReservationStationDependencies& operator=(ReservationStationDependencies&) 
@@ -35,6 +36,7 @@ struct ReservationStationDependencies
   RenameRegisterFilePtr renameRegisters;
   MemoryPtr memory;
   Address& pc;
+  bool& pcStall;
   CommonDataBusPtr cdb;
 };
 

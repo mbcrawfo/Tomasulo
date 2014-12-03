@@ -59,6 +59,9 @@
       <Filter>instructions</Filter>
     </ClCompile>
     <ClCompile Include="..\src\FunctionalUnit.cpp" />
+    <ClCompile Include="..\src\instructions\BranchInstruction.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -94,5 +97,8 @@
       <Filter>instructions</Filter>
     </ClInclude>
     <ClInclude Include="..\src\FunctionalUnit.h" />
+    <ClInclude Include="..\src\instructions\BranchInstruction.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
