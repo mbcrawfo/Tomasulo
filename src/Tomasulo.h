@@ -38,10 +38,10 @@ public:
   void run(Address entryPoint = 0);
 
 private:
-  bool issue(InstructionPtr instr);
+  void issue();
   void execute();
   void write();
-  void advanceStates();
+  void advanceInstructions();
   bool functionalUnitsIdle() const;
 };
 

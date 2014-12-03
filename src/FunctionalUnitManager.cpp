@@ -69,7 +69,7 @@ void FunctionalUnitManager::write()
   }
 }
 
-void FunctionalUnitManager::advanceStates()
+void FunctionalUnitManager::advanceInstructions()
 {
   // retire completed
   auto writePred = [&](ReservationStationPtr rs) {

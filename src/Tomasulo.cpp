@@ -1,6 +1,7 @@
 #include "Tomasulo.h"
 #include "log.h"
 #include "instructions/Instruction.h"
+#include "utility/stream_manip.h"
 #include <cassert>
 #include <string>
 
@@ -89,60 +90,64 @@ void Tomasulo::run(Address entryPoint)
 {
   pc = entryPoint;
 
+  logger->debug(TAG) << "Executing from address "
+    << util::hex<Address> << entryPoint << "\n";
+
   while (!halted || !functionalUnitsIdle())
   {
     ++clockCounter;
     logger->info(TAG) << "****CLOCK CYCLE " << clockCounter << " BEGIN****";
-
-    write();    
-    execute();    
-    if (!halted && !stallIssue)
-    {
-      UWord rawInstruction = memory->readUWord(pc);
-      InstructionPtr instr = instructionFactory->decode(rawInstruction);
-      assert(instr);
-
-      if (issue(instr))
-      {
-        pc += 4;
-      }
-      else
-      {
-        logger->debug(TAG, "Issue failed, PC not modified");
-      }
-    }
-    else
-    {
-      logger->debug(TAG, "Issue stalled");
-    }
-
-    logger->debug(TAG, "**CYCLE CLOSURE**");
-    commonDataBus->notifyAll();
-    commonDataBus->writeAndClear();
-    advanceStates();
+    
+    advanceInstructions();            
+    issue();
+    execute();
+    write();
+        
     logger->info(TAG) << "****CLOCK CYCLE " << clockCounter << " END****\n";
   }
 }
 
-bool Tomasulo::issue(InstructionPtr instr)
+void Tomasulo::issue()
 {
-  logger->debug(TAG, "**ISSUE BEGIN**");
-  bool result;
+  logger->debug(TAG, "**ISSUE BEGIN**");  
 
-  // check for a halt
-  if (instr->getName() == InstructionName::TRAP && instr->getImmediate() == 0)
+  if (!halted && !stallIssue)
   {
-    halted = true;
-    logger->info(TAG, "Halting when instructions complete");
-    result = true;
+    bool advancePC = true;
+    UWord rawInstruction = memory->readUWord(pc);
+    InstructionPtr instruction = instructionFactory->decode(rawInstruction);
+    assert(instruction);
+
+    logger->debug(TAG) << "Decoded " << *instruction;
+
+    // check for a halt
+    if (instruction->getName() == InstructionName::TRAP
+      && instruction->getImmediate() == 0)
+    {
+      halted = true;
+      logger->info(TAG, "Halting when issued instructions are completed");
+      advancePC = false;
+    }
+    else
+    {
+      advancePC = functionalUnits[instruction->getType()]->issue(instruction);
+    }
+
+    if (advancePC)
+    {
+      pc += 4;
+    }
+    else
+    {
+      logger->debug(TAG, "PC was not incremented");
+    }
   }
   else
   {
-    result = functionalUnits[instr->getType()]->issue(instr);    
-  }
+    logger->debug(TAG, "Issue stalled");
+  }  
 
   logger->debug(TAG, "**ISSUE END**");
-  return result;
 }
 
 void Tomasulo::execute()
@@ -162,14 +167,16 @@ void Tomasulo::write()
   {
     fu.second->write();
   }
+  commonDataBus->notifyAll();
+  commonDataBus->writeAndClear();
   logger->debug(TAG, "**WRITE END**");
 }
 
-void Tomasulo::advanceStates()
+void Tomasulo::advanceInstructions()
 {
   for (auto fu : functionalUnits)
   {
-    fu.second->advanceStates();
+    fu.second->advanceInstructions();
   }
 }
 

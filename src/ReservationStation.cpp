@@ -51,7 +51,7 @@ ReservationStationState ReservationStation::getState() const
 void ReservationStation::setInstruction(InstructionPtr instr)
 {
   instruction = instr;
-  logger->debug(TAG) << id << " beginning " << *instruction;
+  logger->debug(TAG) << id << " was issued " << instruction->getName();
 
   executeCyclesRemaining = executeCycles;
   arg1.uw = 0;
@@ -66,7 +66,7 @@ void ReservationStation::setInstruction(InstructionPtr instr)
   if (arg1Ready && arg2Ready)
   {
     state = ReservationStationState::ReadyToExecute;
-    logger->debug(TAG) << id << " has all args";
+    logger->debug(TAG) << id << " has read all arguments";
   }
   else
   {
@@ -91,7 +91,7 @@ void ReservationStation::clearInstruction()
 void ReservationStation::setIsExecuting()
 {
   state = ReservationStationState::Executing;
-  logger->debug(TAG) << id << " advanced to execute";
+  logger->debug(TAG) << id << " moved to execute stage";
 }
 
 void ReservationStation::execute()
@@ -113,7 +113,7 @@ void ReservationStation::execute()
 void ReservationStation::setIsWriting()
 {
   state = ReservationStationState::Writing;
-  logger->debug(TAG) << id << " advanced to write";
+  logger->debug(TAG) << id << " moved to write stage";
 }
 
 void ReservationStation::write()
@@ -139,8 +139,8 @@ void ReservationStation::write()
   case WriteAction::Memory:
     deps.memory->writeUWord(result.uw, arg2.uw);
     state = ReservationStationState::WriteComplete;
-    logger->debug(TAG) << id << " wrote " << util::hex<UWord> << arg2.uw
-      << " to " << util::hex<UWord> << result.uw;
+    logger->debug(TAG) << id << " wrote value " << util::hex<UWord> << arg2.uw
+      << " to address " << util::hex<UWord> << result.uw;
     break;
   }
 }
@@ -153,7 +153,7 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
     arg1Ready = true;
     arg1Source = ReservationStationID::NONE;
     logger->debug(TAG) << id << " captured " << instruction->getArg1() << "=" 
-      << util::hex<UWord> << arg1.uw << " from " << rsid;
+      << util::hex<UWord> << arg1.uw << " from " << rsid << " via CDB";
   }
   if (!arg2Ready && rsid == arg2Source)
   {
@@ -161,13 +161,13 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
     arg2Ready = true;
     arg2Source = ReservationStationID::NONE;
     logger->debug(TAG) << id << " captured " << instruction->getArg2() << "=" 
-      << util::hex<UWord> << arg2.uw << " from " << rsid;
+      << util::hex<UWord> << arg2.uw << " from " << rsid << " via CDB";
   }
 
   if (arg1Ready && arg2Ready)
   {
     state = ReservationStationState::ReadyToExecute;
-    logger->debug(TAG) << id << " has all args";
+    logger->debug(TAG) << id << " has read all arguments";
     return true;
   }
 
@@ -187,14 +187,15 @@ void ReservationStation::setArgSources()
     if (rename != ReservationStationID::NONE)
     {
       arg1Source = rename;
-      logger->debug(TAG) << "Waiting for " << rs1 << " from " << rename;
+      logger->debug(TAG) << id << " is waiting to read " << rs1 
+        << " from " << rename;
     }
     else
     {
       arg1 = deps.registers->read(rs1);
       arg1Ready = true;
-      logger->debug(TAG) << "Read " << rs1 << "=" << util::hex<UWord> 
-        << arg1.uw;
+      logger->debug(TAG) << id << " read " << rs1 << "=" 
+        << util::hex<UWord> << arg1.uw;
     }
   }
 
@@ -209,14 +210,15 @@ void ReservationStation::setArgSources()
     if (rename != ReservationStationID::NONE)
     {
       arg2Source = rename;
-      logger->debug(TAG) << "Waiting for " << rs2 << " from " << rename;
+      logger->debug(TAG) << id << " is waiting to read " << rs2 
+        << " from " << rename;
     }
     else
     {
       arg2 = deps.registers->read(rs2);
       arg2Ready = true;
-      logger->debug(TAG) << "Read " << rs2 << "=" << util::hex<UWord> 
-        << arg2.uw;
+      logger->debug(TAG) << id << " read " << rs2 << "=" 
+        << util::hex<UWord> << arg2.uw;
     }
   }
 }

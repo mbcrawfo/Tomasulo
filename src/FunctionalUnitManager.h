@@ -36,7 +36,7 @@ public:
   bool issue(InstructionPtr instruction);
   void execute();
   void write();
-  void advanceStates();
+  void advanceInstructions();
 
 private:
   bool executeUnitsAvailable();

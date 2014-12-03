@@ -15,7 +15,7 @@ static const std::string TAG = "memory";
 Memory::Memory(UWord size)
   : mem(size + (size % sizeof(Word)), 0)
 {
-  logger->debug(TAG) 
+  logger->verbose(TAG) 
     << "Initialized " << size + (size % sizeof(Word)) << " bytes";
 }
 

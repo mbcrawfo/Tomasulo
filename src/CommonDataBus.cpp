@@ -27,7 +27,7 @@ bool CommonDataBus::set(const ReservationStationID& source,
 {
   if (used)
   {
-    logger->debug(TAG) << "In use, rejecting " << source;
+    logger->debug(TAG) << "Is in use, cannot write " << source;
     return false;
   }
 
@@ -35,7 +35,7 @@ bool CommonDataBus::set(const ReservationStationID& source,
   this->dest = dest;
   this->value = value;
   used = true;
-  logger->debug(TAG) << "Set to " << source << " -> "
+  logger->debug(TAG) << source << " wrote "
     << dest << "=" << util::hex<UWord> << value.uw;
 
   return true;
@@ -46,7 +46,8 @@ void CommonDataBus::writeAndClear()
   if (used)
   {
     registers->write(dest, value);
-    logger->debug(TAG) << "Wrote " << dest << "=" << util::hex<UWord> << value.uw;
+    logger->debug(TAG) << "Committed " << dest << "=" 
+      << util::hex<UWord> << value.uw << " to register file";
 
     renameRegisters->clearRename(source);
     used = false;
