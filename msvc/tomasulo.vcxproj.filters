@@ -33,7 +33,6 @@
     <ClCompile Include="..\src\Exceptions.cpp" />
     <ClCompile Include="..\src\ReservationStationID.cpp" />
     <ClCompile Include="..\src\RegisterID.cpp" />
-    <ClCompile Include="..\src\FunctionalUnit.cpp" />
     <ClCompile Include="..\src\instructions\Instruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
@@ -53,6 +52,7 @@
     <ClCompile Include="..\src\instructions\TrapInstruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\FunctionalUnitManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -62,7 +62,6 @@
     <ClInclude Include="..\src\Exceptions.h" />
     <ClInclude Include="..\src\ReservationStationID.h" />
     <ClInclude Include="..\src\RegisterID.h" />
-    <ClInclude Include="..\src\FunctionalUnit.h" />
     <ClInclude Include="..\src\instructions\Instruction.h">
       <Filter>instructions</Filter>
     </ClInclude>
@@ -82,5 +81,6 @@
     <ClInclude Include="..\src\instructions\TrapInstruction.h">
       <Filter>instructions</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\FunctionalUnitManager.h" />
   </ItemGroup>
 </Project>

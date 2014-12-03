@@ -91,7 +91,7 @@
     <ClCompile Include="..\deps\cpp-utils\src\log\StreamLogWriter.cpp" />
     <ClCompile Include="..\src\CommonDataBus.cpp" />
     <ClCompile Include="..\src\Exceptions.cpp" />
-    <ClCompile Include="..\src\FunctionalUnit.cpp" />
+    <ClCompile Include="..\src\FunctionalUnitManager.cpp" />
     <ClCompile Include="..\src\instructions\Instruction.cpp" />
     <ClCompile Include="..\src\instructions\InstructionFactory.cpp" />
     <ClCompile Include="..\src\instructions\instruction_types.cpp" />
@@ -109,7 +109,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\CommonDataBus.h" />
     <ClInclude Include="..\src\Exceptions.h" />
-    <ClInclude Include="..\src\FunctionalUnit.h" />
+    <ClInclude Include="..\src\FunctionalUnitManager.h" />
     <ClInclude Include="..\src\instructions\Instruction.h" />
     <ClInclude Include="..\src\instructions\InstructionFactory.h" />
     <ClInclude Include="..\src\instructions\instruction_types.h" />

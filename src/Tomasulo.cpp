@@ -9,10 +9,14 @@ static const std::string TAG = "Tomasulo";
 // machine configuration
 static const int GPR_REGISTERS = 32;
 static const int FPR_REGISTERS = 32;
-static const int INTEGER_STATIONS = 8;
+
 static const int INTEGER_CYCLES = 1;
-static const int TRAP_STATIONS = 4;
+static const int INTEGER_STATIONS = 8;
+static const int INTEGER_UNITS = 3;
+
 static const int TRAP_CYCLES = 1;
+static const int TRAP_STATIONS = 4;
+static const int TRAP_UNITS = 1;
 
 Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
   : verbose(verbose),
@@ -46,16 +50,16 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
 
   functionalUnits[FunctionalUnitType::Integer] = 
     FunctionalUnitPtr(
-      new FunctionalUnit(
+      new FunctionalUnitManager(
         FunctionalUnitType::Integer, false, INTEGER_CYCLES, 
-        INTEGER_STATIONS, deps
+        INTEGER_STATIONS, INTEGER_UNITS, deps
         )
     );
   functionalUnits[FunctionalUnitType::Trap] =
     FunctionalUnitPtr(
-      new FunctionalUnit(
+      new FunctionalUnitManager(
         FunctionalUnitType::Trap, true, TRAP_CYCLES,
-        TRAP_STATIONS, deps
+        TRAP_STATIONS, TRAP_UNITS, deps
         )
     );
 }
@@ -77,7 +81,7 @@ void Tomasulo::run(Address entryPoint)
   while (!halted || !functionalUnitsIdle())
   {
     ++clockCounter;
-    logger->info(TAG) << "Starting clock cycle " << clockCounter;
+    logger->info(TAG) << "****CLOCK CYCLE " << clockCounter << " BEGIN****";
 
     write();    
     execute();    
@@ -91,49 +95,67 @@ void Tomasulo::run(Address entryPoint)
       {
         pc += 4;
       }
+      else
+      {
+        logger->debug(TAG, "Issue failed, PC not modified");
+      }
     }
+    else
+    {
+      logger->debug(TAG, "Issue stalled");
+    }
+
+    logger->debug(TAG, "**CYCLE CLOSURE**");
+    commonDataBus->notifyAll();
+    commonDataBus->writeAndClear();
     advanceStates();
+    logger->info(TAG) << "****CLOCK CYCLE " << clockCounter << " END****\n";
   }
 }
 
 bool Tomasulo::issue(InstructionPtr instr)
 {
-  logger->debug(TAG, "Issuing");
+  logger->debug(TAG, "**ISSUE BEGIN**");
+  bool result;
 
   // check for a halt
   if (instr->getName() == InstructionName::TRAP && instr->getImmediate() == 0)
   {
     halted = true;
     logger->info(TAG, "Halting when instructions complete");
-    return true;
+    result = true;
+  }
+  else
+  {
+    result = functionalUnits[instr->getType()]->issue(instr);    
   }
 
-  return functionalUnits[instr->getType()]->issue(instr);
+  logger->debug(TAG, "**ISSUE END**");
+  return result;
 }
 
 void Tomasulo::execute()
 {
-  logger->debug(TAG, "Executing");
+  logger->debug(TAG, "**EXECUTE BEGIN**");
   for (auto fu : functionalUnits)
   {
     fu.second->execute();
   }
+  logger->debug(TAG, "**EXECUTE END**");
 }
 
 void Tomasulo::write()
 {
-  logger->debug(TAG, "Writing");
+  logger->debug(TAG, "**WRITE BEGIN**");
   for (auto fu : functionalUnits)
   {
     fu.second->write();
   }
-  commonDataBus->notifyAll();
-  commonDataBus->writeAndClear();
+  logger->debug(TAG, "**WRITE END**");
 }
 
 void Tomasulo::advanceStates()
 {
-  logger->debug(TAG, "Advancing reservation stations");
   for (auto fu : functionalUnits)
   {
     fu.second->advanceStates();

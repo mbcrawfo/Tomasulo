@@ -1,17 +1,20 @@
-#include "FunctionalUnit.h"
+#include "FunctionalUnitManager.h"
 #include "log.h"
 #include <string>
 #include <cassert>
+#include <algorithm>
 
-static const std::string TAG = "FunctionalUnit";
+static const std::string TAG = "FunctionalUnitManager";
 
-FunctionalUnit::FunctionalUnit(FunctionalUnitType type, 
+FunctionalUnitManager::FunctionalUnitManager(FunctionalUnitType type, 
   bool executeInOrder,
   std::size_t executeCycles,
-  std::size_t numStations, 
+  std::size_t numStations,
+  std::size_t numExecuteUnits,
   ReservationStationDependencies& deps)
   : type(type),
     executeInOrder(executeInOrder),
+    numExecuteUnits(numExecuteUnits),
     idleStations(),
     issuedStations(),
     executingStations(),
@@ -26,19 +29,19 @@ FunctionalUnit::FunctionalUnit(FunctionalUnitType type,
   }
 }
 
-bool FunctionalUnit::idle() const
+bool FunctionalUnitManager::idle() const
 {
   return issuedStations.empty() && executingStations.empty() 
     && writingStations.empty();
 }
 
-bool FunctionalUnit::issue(InstructionPtr instruction)
+bool FunctionalUnitManager::issue(InstructionPtr instruction)
 {
   assert(instruction != nullptr);
 
   if (idleStations.empty())
   {
-    logger->debug(TAG) << type << " full, cannot issue " 
+    logger->debug(TAG) << type << " stations full, cannot issue " 
       << instruction->getName();
     return false;
   }
@@ -50,7 +53,7 @@ bool FunctionalUnit::issue(InstructionPtr instruction)
   return true;
 }
 
-void FunctionalUnit::execute()
+void FunctionalUnitManager::execute()
 {
   for (auto rs : executingStations)
   {
@@ -58,7 +61,7 @@ void FunctionalUnit::execute()
   }
 }
 
-void FunctionalUnit::write()
+void FunctionalUnitManager::write()
 {
   for (auto rs : writingStations)
   {
@@ -66,7 +69,7 @@ void FunctionalUnit::write()
   }
 }
 
-void FunctionalUnit::advanceStates()
+void FunctionalUnitManager::advanceStates()
 {
   // retire completed
   auto writePred = [&](ReservationStationPtr rs) {
@@ -91,7 +94,12 @@ void FunctionalUnit::advanceStates()
   }
 }
 
-void FunctionalUnit::inOrderAdvance()
+bool FunctionalUnitManager::executeUnitsAvailable()
+{
+  return (executingStations.size() + writingStations.size()) < numExecuteUnits;
+}
+
+void FunctionalUnitManager::inOrderAdvance()
 { 
   // move from execute to write
   while (!executingStations.empty())
@@ -116,13 +124,26 @@ void FunctionalUnit::inOrderAdvance()
       break;
     }
 
+    if (!executeUnitsAvailable())
+    {
+      auto func = [&](ReservationStationPtr rs) {
+        if (rs->getState() == ReservationStationState::ReadyToExecute)
+        {
+          logger->debug(TAG) << type << " execute units full, " << rs->getID()
+            << " waiting";
+        }
+      };
+      std::for_each(issuedStations.begin(), issuedStations.end(), func);      
+      break;
+    }
+
     issuedStations.pop_front();
     rs->setIsExecuting();
     executingStations.push_back(rs);
   }
 }
 
-void FunctionalUnit::outOfOrderAdvance()
+void FunctionalUnitManager::outOfOrderAdvance()
 {
   // move from execute to write
   auto pred2 = [&](ReservationStationPtr rs) {
@@ -140,6 +161,12 @@ void FunctionalUnit::outOfOrderAdvance()
   auto pred = [&](ReservationStationPtr rs) {
     if (rs->getState() == ReservationStationState::ReadyToExecute)
     {
+      if (!executeUnitsAvailable())
+      {
+        logger->debug(TAG) << type << " execute units full, " << rs->getID()
+          << " waiting";
+        return false;
+      }
       rs->setIsExecuting();
       executingStations.push_back(rs);
       return true;

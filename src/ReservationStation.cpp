@@ -143,16 +143,16 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
     arg1 = value;
     arg1Ready = true;
     arg1Source = ReservationStationID::NONE;
-    logger->debug(TAG) << id << " captured rs1=" << util::hex<UWord> << arg1.uw
-      << " from " << rsid;
+    logger->debug(TAG) << id << " captured " << instruction->getRs1() << "=" 
+      << util::hex<UWord> << arg1.uw << " from " << rsid;
   }
   if (!arg2Ready && rsid == arg2Source)
   {
     arg2 = value;
     arg2Ready = true;
     arg2Source = ReservationStationID::NONE;
-    logger->debug(TAG) << id << " captured rs2=" << util::hex<UWord> << arg2.uw
-      << " from " << rsid;
+    logger->debug(TAG) << id << " captured " << instruction->getRs2() << "=" 
+      << util::hex<UWord> << arg2.uw << " from " << rsid;
   }
 
   if (arg1Ready && arg2Ready)
@@ -178,14 +178,14 @@ void ReservationStation::setArgSources()
     if (rename != ReservationStationID::NONE)
     {
       arg1Source = rename;
-      logger->debug(TAG) << "Waiting for rs1 from " << rename;
+      logger->debug(TAG) << "Waiting for " << rs1 << " from " << rename;
     }
     else
     {
       arg1 = deps.registers->read(rs1);
       arg1Ready = true;
-      logger->debug(TAG) << "Read rs1=" << util::hex<UWord> << arg1.uw
-        << " from " << rs1;
+      logger->debug(TAG) << "Read " << rs1 << "=" << util::hex<UWord> 
+        << arg1.uw;
     }
   }
 
@@ -200,14 +200,14 @@ void ReservationStation::setArgSources()
     if (rename != ReservationStationID::NONE)
     {
       arg2Source = rename;
-      logger->debug(TAG) << "Waiting for rs2 from " << rename;
+      logger->debug(TAG) << "Waiting for " << rs2 << " from " << rename;
     }
     else
     {
       arg2 = deps.registers->read(rs2);
       arg2Ready = true;
-      logger->debug(TAG) << "Read rs2=" << util::hex<UWord> << arg2.uw
-        << " from " << rs1;
+      logger->debug(TAG) << "Read " << rs2 << "=" << util::hex<UWord> 
+        << arg2.uw;
     }
   }
 }

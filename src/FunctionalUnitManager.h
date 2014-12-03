@@ -6,27 +6,30 @@
 #include "instructions/Instruction.h"
 #include <list>
 
-class FunctionalUnit;
-using FunctionalUnitPtr = Pointer<FunctionalUnit>;
+class FunctionalUnitManager;
+using FunctionalUnitPtr = Pointer<FunctionalUnitManager>;
 
-class FunctionalUnit
+class FunctionalUnitManager
 {
 private:
-  using RSList = std::list<ReservationStationPtr>;
+  using ReservationStationList = std::list<ReservationStationPtr>;
 
   FunctionalUnitType type;
   bool executeInOrder;
-  RSList idleStations;
-  RSList issuedStations;
-  RSList executingStations;
-  RSList writingStations;
+  const std::size_t numExecuteUnits;
+  ReservationStationList idleStations;
+  ReservationStationList issuedStations;
+  ReservationStationList executingStations;
+  ReservationStationList writingStations;
 
 public:
-  FunctionalUnit(FunctionalUnitType type, 
+  FunctionalUnitManager(FunctionalUnitType type, 
     bool executeInOrder,
     std::size_t executeCycles,
     std::size_t numStations,
+    std::size_t numExecuteUnits,
     ReservationStationDependencies& deps);
+  FunctionalUnitManager& operator=(FunctionalUnitManager&);
 
   bool idle() const;
 
@@ -36,6 +39,7 @@ public:
   void advanceStates();
 
 private:
+  bool executeUnitsAvailable();
   void inOrderAdvance();
   void outOfOrderAdvance();
 };

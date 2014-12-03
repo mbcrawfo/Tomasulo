@@ -21,7 +21,7 @@ void RenameRegisterFile::rename(const RegisterID& reg,
   }
 
   renameRegisters[reg] = rsid;
-  logger->debug(TAG) << "Adding renaming " << reg << " -> " << rsid;
+  logger->debug(TAG) << "Renaming " << reg << " -> " << rsid;
 }
 
 void RenameRegisterFile::clearRename(const RegisterID& reg)
