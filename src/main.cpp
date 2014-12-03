@@ -223,7 +223,7 @@ bool loadFromFile(Memory& mem, const std::string& filename)
   }
 
   std::size_t count = 0;
-  logger->debug(TAG, "Loading from file " + filename);
+  logger->info(TAG, "Loading from file " + filename);
   while (!file.eof())
   {
     std::string line;
@@ -286,10 +286,10 @@ bool loadFromFile(Memory& mem, const std::string& filename)
 
     count += buffer.size();
     mem.write(addr, buffer);
-    logger->debug(TAG) << "Writing " << buffer.size() << " bytes to "
+    logger->verbose(TAG) << "Writing " << buffer.size() << " bytes to "
       << util::hex<Address> << addr;
   }
 
-  logger->debug(TAG) << "Read in " << count << " bytes";
+  logger->verbose(TAG) << "Read in " << count << " bytes";
   return true;
 }

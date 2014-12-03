@@ -77,28 +77,29 @@ void Tomasulo::run(Address entryPoint)
   while (!halted || !functionalUnitsIdle())
   {
     ++clockCounter;
+    logger->info(TAG) << "Starting clock cycle " << clockCounter;
 
-    logger->info(TAG) << "Cycle " << clockCounter << " write";
-    write();
-    logger->info(TAG) << "Cycle " << clockCounter << " execute";
-    execute();
-    logger->info(TAG) << "Cycle " << clockCounter << " issue";
-    if (!halted)
+    write();    
+    execute();    
+    if (!halted && !stallIssue)
     {
       UWord rawInstruction = memory->readUWord(pc);
       InstructionPtr instr = instructionFactory->decode(rawInstruction);
       assert(instr);
 
-      if (issue(instr) && !stallIssue)
+      if (issue(instr))
       {
         pc += 4;
       }
     }
+    advanceStates();
   }
 }
 
 bool Tomasulo::issue(InstructionPtr instr)
 {
+  logger->debug(TAG, "Issuing");
+
   // check for a halt
   if (instr->getName() == InstructionName::TRAP && instr->getImmediate() == 0)
   {
@@ -112,6 +113,7 @@ bool Tomasulo::issue(InstructionPtr instr)
 
 void Tomasulo::execute()
 {
+  logger->debug(TAG, "Executing");
   for (auto fu : functionalUnits)
   {
     fu.second->execute();
@@ -120,12 +122,22 @@ void Tomasulo::execute()
 
 void Tomasulo::write()
 {
+  logger->debug(TAG, "Writing");
   for (auto fu : functionalUnits)
   {
     fu.second->write();
   }
   commonDataBus->notifyAll();
   commonDataBus->writeAndClear();
+}
+
+void Tomasulo::advanceStates()
+{
+  logger->debug(TAG, "Advancing reservation stations");
+  for (auto fu : functionalUnits)
+  {
+    fu.second->advanceStates();
+  }
 }
 
 bool Tomasulo::functionalUnitsIdle() const

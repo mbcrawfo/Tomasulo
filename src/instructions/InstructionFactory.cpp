@@ -56,6 +56,7 @@ InstructionPtr InstructionFactory::decode(UWord rawInstruction)
   }
 
   setRegisterTypes();
+  logger->verbose(TAG) << "Decoded " << *result;
   return result;
 }
 
@@ -95,7 +96,7 @@ void InstructionFactory::decodeRtype()
   result->rd.index = (instruction >> (31 - 20)) & 0x1f;
   result->rs1.index = (instruction >> (31 - 10)) & 0x1f;
   result->rs2.index = (instruction >> (31 - 15)) & 0x1f;
-  result->immediate = 0xffffffff;
+  result->immediate = 0;
 }
 
 void InstructionFactory::decodeJtype()

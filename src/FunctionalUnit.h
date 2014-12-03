@@ -33,10 +33,11 @@ public:
   bool issue(InstructionPtr instruction);
   void execute();
   void write();
+  void advanceStates();
 
 private:
-  void inOrderExecute();
-  void outOfOrderExecute();
+  void inOrderAdvance();
+  void outOfOrderAdvance();
 };
 
 #endif

@@ -1,5 +1,9 @@
 #include "FunctionalUnit.h"
+#include "log.h"
+#include <string>
 #include <cassert>
+
+static const std::string TAG = "FunctionalUnit";
 
 FunctionalUnit::FunctionalUnit(FunctionalUnitType type, 
   bool executeInOrder,
@@ -34,6 +38,8 @@ bool FunctionalUnit::issue(InstructionPtr instruction)
 
   if (idleStations.empty())
   {
+    logger->debug(TAG) << type << " full, cannot issue " 
+      << instruction->getName();
     return false;
   }
 
@@ -46,19 +52,24 @@ bool FunctionalUnit::issue(InstructionPtr instruction)
 
 void FunctionalUnit::execute()
 {
-  if (executeInOrder)
+  for (auto rs : executingStations)
   {
-    inOrderExecute();
-  }
-  else
-  {
-    outOfOrderExecute();
+    rs->execute();
   }
 }
 
 void FunctionalUnit::write()
 {
-  auto pred = [&](ReservationStationPtr rs) {
+  for (auto rs : writingStations)
+  {
+    rs->write();
+  }
+}
+
+void FunctionalUnit::advanceStates()
+{
+  // retire completed
+  auto writePred = [&](ReservationStationPtr rs) {
     if (rs->getState() == ReservationStationState::WriteComplete)
     {
       rs->clearInstruction();
@@ -68,34 +79,21 @@ void FunctionalUnit::write()
 
     return false;
   };
-  writingStations.remove_if(pred);
+  writingStations.remove_if(writePred);
 
-  for (auto rs : writingStations)
+  if (executeInOrder)
   {
-    rs->write();
+    inOrderAdvance();
+  }
+  else
+  {
+    outOfOrderAdvance();
   }
 }
 
-void FunctionalUnit::inOrderExecute()
-{
-  while (!issuedStations.empty())
-  {
-    auto rs = issuedStations.front();    
-    if (rs->getState() != ReservationStationState::ReadyToExecute)
-    {
-      break;
-    }
-
-    issuedStations.pop_front();
-    rs->setIsExecuting();
-    executingStations.push_back(rs);
-  }
-
-  for (auto rs : executingStations)
-  {
-    rs->execute();
-  }
-
+void FunctionalUnit::inOrderAdvance()
+{ 
+  // move from execute to write
   while (!executingStations.empty())
   {
     auto rs = executingStations.front();
@@ -108,23 +106,26 @@ void FunctionalUnit::inOrderExecute()
     rs->setIsWriting();
     writingStations.push_back(rs);
   }
+
+  // move from issued to execute
+  while (!issuedStations.empty())
+  {
+    auto rs = issuedStations.front();
+    if (rs->getState() != ReservationStationState::ReadyToExecute)
+    {
+      break;
+    }
+
+    issuedStations.pop_front();
+    rs->setIsExecuting();
+    executingStations.push_back(rs);
+  }
 }
 
-void FunctionalUnit::outOfOrderExecute()
+void FunctionalUnit::outOfOrderAdvance()
 {
-  auto pred = [&](ReservationStationPtr rs) {
-    if (rs->getState() == ReservationStationState::ReadyToExecute)
-    {
-      rs->setIsExecuting();
-      executingStations.push_back(rs);
-      return true;
-    }
-    return false;
-  };
-  issuedStations.remove_if(pred);
-
+  // move from execute to write
   auto pred2 = [&](ReservationStationPtr rs) {
-    rs->execute();
     if (rs->getState() == ReservationStationState::ExecutionComplete)
     {
       rs->setIsWriting();
@@ -134,4 +135,16 @@ void FunctionalUnit::outOfOrderExecute()
     return false;
   };
   executingStations.remove_if(pred2);
+
+  // move from issued to execute
+  auto pred = [&](ReservationStationPtr rs) {
+    if (rs->getState() == ReservationStationState::ReadyToExecute)
+    {
+      rs->setIsExecuting();
+      executingStations.push_back(rs);
+      return true;
+    }
+    return false;
+  };
+  issuedStations.remove_if(pred);  
 }

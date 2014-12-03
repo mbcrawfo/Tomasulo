@@ -41,6 +41,7 @@ private:
   bool issue(InstructionPtr instr);
   void execute();
   void write();
+  void advanceStates();
   bool functionalUnitsIdle() const;
 };
 

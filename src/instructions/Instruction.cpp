@@ -1,6 +1,6 @@
 #include "Instruction.h"
 #include "log.h"
-
+#include "utility/stream_manip.h"
 #include <string>
 
 static const std::string TAG = "Instruction";
@@ -43,6 +43,6 @@ WriteAction Instruction::getWriteAction() const
 std::ostream& operator<<(std::ostream& os, const Instruction& data)
 {
   os << data.name << " rd=" << data.rd << " rs1=" << data.rs1 << " rs2="
-    << data.rs2 << " imm=" << data.immediate;
+    << data.rs2 << " imm=" << util::hex<UWord> << data.immediate;
   return os;
 }

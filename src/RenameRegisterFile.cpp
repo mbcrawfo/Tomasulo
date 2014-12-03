@@ -15,12 +15,13 @@ void RenameRegisterFile::rename(const RegisterID& reg,
   auto itr = renameRegisters.find(reg);
   if (itr != renameRegisters.end())
   {
-    logger->warning(TAG) << "Overwriting mapping "
+    logger->warning(TAG) << "Overwriting rename of "
       << reg << " -> " << itr->second << " to "
       << reg << " -> " << rsid;
   }
 
   renameRegisters[reg] = rsid;
+  logger->debug(TAG) << "Adding renaming " << reg << " -> " << rsid;
 }
 
 void RenameRegisterFile::clearRename(const RegisterID& reg)
@@ -28,7 +29,8 @@ void RenameRegisterFile::clearRename(const RegisterID& reg)
   auto itr = renameRegisters.find(reg);
   if (itr != renameRegisters.end())
   {
-    logger->debug(TAG) << "Clearing mapping " << reg << " -> " << itr->second;
+    logger->debug(TAG) << "Clearing renaming of " << reg 
+      << " (was " << itr->second << ")";
     renameRegisters.erase(itr);
   }
 }

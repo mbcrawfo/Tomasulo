@@ -91,7 +91,7 @@ void ReservationStation::clearInstruction()
 void ReservationStation::setIsExecuting()
 {
   state = ReservationStationState::Executing;
-  logger->debug(TAG) << id << " advanced to executing";
+  logger->debug(TAG) << id << " advanced to execute";
 }
 
 void ReservationStation::execute()
@@ -108,7 +108,7 @@ void ReservationStation::execute()
 void ReservationStation::setIsWriting()
 {
   state = ReservationStationState::Writing;
-  logger->debug(TAG) << id << " advanced to writing";
+  logger->debug(TAG) << id << " advanced to write";
 }
 
 void ReservationStation::write()
@@ -178,7 +178,7 @@ void ReservationStation::setArgSources()
     if (rename != ReservationStationID::NONE)
     {
       arg1Source = rename;
-      logger->debug(TAG) << "Sourcing rs1 from " << rename;
+      logger->debug(TAG) << "Waiting for rs1 from " << rename;
     }
     else
     {
@@ -200,7 +200,7 @@ void ReservationStation::setArgSources()
     if (rename != ReservationStationID::NONE)
     {
       arg2Source = rename;
-      logger->debug(TAG) << "Sourcing rs2 from " << rename;
+      logger->debug(TAG) << "Waiting for rs2 from " << rename;
     }
     else
     {
