@@ -25,6 +25,10 @@ static const int MEMORY_CYCLES = 2;
 static const int MEMORY_STATIONS = 8;
 static const int MEMORY_UNITS = 1;
 
+static const int FLOAT_CYCLES = 4;
+static const int FLOAT_STATIONS = 8;
+static const int FLOAT_UNITS = 2;
+
 Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
   : verbose(verbose),
     instructionFactory(nullptr),
@@ -57,23 +61,30 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
     );
   functionalUnits[FunctionalUnitType::Integer] = 
     FunctionalUnitPtr(
-      new FunctionalUnitManager(
+      new FunctionalUnit(
         FunctionalUnitType::Integer, false, INTEGER_CYCLES, 
         INTEGER_STATIONS, INTEGER_UNITS, deps
         )
     );
   functionalUnits[FunctionalUnitType::Trap] =
     FunctionalUnitPtr(
-      new FunctionalUnitManager(
+      new FunctionalUnit(
         FunctionalUnitType::Trap, true, TRAP_CYCLES,
         TRAP_STATIONS, TRAP_UNITS, deps
         )
     );
   functionalUnits[FunctionalUnitType::Memory] =
     FunctionalUnitPtr(
-      new FunctionalUnitManager(
+      new FunctionalUnit(
         FunctionalUnitType::Memory, true, MEMORY_CYCLES, 
         MEMORY_STATIONS, MEMORY_UNITS, deps
+        )
+    );
+  functionalUnits[FunctionalUnitType::FloatingPoint] =
+    FunctionalUnitPtr(
+      new FunctionalUnit(
+        FunctionalUnitType::FloatingPoint, false, FLOAT_CYCLES,
+        FLOAT_STATIONS, FLOAT_UNITS, deps
         )
     );
 }
@@ -133,7 +144,8 @@ void Tomasulo::issue()
     }
     else
     {
-      advancePC = functionalUnits[instruction->getType()]->issue(instruction);
+      auto fu = functionalUnits[instruction->getType()];
+      advancePC = fu->issue(instruction, clockCounter);
     }
 
     if (advancePC)
@@ -244,7 +256,7 @@ void Tomasulo::dumpRegisters() const
     auto rename = renameRegisterFile->getRenaming(reg);
     if (rename == ReservationStationID::NONE)
     {
-      std::cout << registerFile->read(reg).f << " ";
+      std::cout << util::hex<UWord> << registerFile->read(reg).uw << " ";
     }
     else
     {

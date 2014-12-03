@@ -13,46 +13,69 @@ CommonDataBus::CommonDataBus(RegisterFilePtr registers,
   RenameRegisterFilePtr renameRegisters)
   : used(false),
     idleThisCycle(true),
-    source(ReservationStationID::NONE),
-    dest(RegisterID::NONE),
+    source(nullptr),
+    sourceID(ReservationStationID::NONE),
+    destID(RegisterID::NONE),
     value(),
     registers(registers),
     renameRegisters(renameRegisters),
-    listeners()
+    listeners(),
+    rejected()
 {
   assert(registers != nullptr);
   assert(renameRegisters != nullptr);
 }
 
-bool CommonDataBus::write(const ReservationStationID& source,
-  const RegisterID& dest, Data value)
+void CommonDataBus::write(ReservationStation* src)
 {
-  if (used)
+  assert(src != nullptr);
+
+  if (source == nullptr)
   {
-    logger->debug(TAG) << "Is in use, cannot write " << source;
-    return false;
+    source = src;
+  }
+  else
+  {
+    if (src->getStartClock() < source->getStartClock())
+    {
+      logger->verbose(TAG) << src->getID() << " evicted " << source->getID();
+      rejected.push_back(source);
+      source = src;
+    }
+    else
+    {
+      rejected.push_back(src);
+    }
   }
 
-  this->source = source;
-  this->dest = dest;
-  this->value = value;
   used = true;
   idleThisCycle = false;
-  logger->debug(TAG) << source << " wrote "
-    << dest << "=" << util::hex<UWord> << value.uw;
-
-  return true;
 }
 
 void CommonDataBus::commit()
 {
   if (used)
   {
-    notifyAll();
-    registers->write(dest, value);
-    logger->debug(TAG) << "Committed " << dest << "=" 
-      << util::hex<UWord> << value.uw << " to register file";
+    sourceID = source->getID();
+    destID = source->getDest();
+    value = source->getResult();    
+    source->notifyWriteAccepted();
+    source = nullptr;
 
+    logger->debug(TAG) << sourceID << " wrote " << destID << "="
+      << util::hex<UWord> << value.uw;
+    for (auto rs : rejected)
+    {
+      logger->debug(TAG) << rs->getID() << " could not write";
+    }
+    rejected.clear();
+
+    notifyListeners();
+    registers->write(destID, value);
+
+    logger->debug(TAG) << "Committed " << destID << "="
+      << util::hex<UWord> << value.uw << " to register file";
+        
     used = false;
   }
   else
@@ -70,7 +93,7 @@ void CommonDataBus::dumpState() const
   }
   else
   {
-    std::cout << source << "=" << util::hex<UWord> << value.uw
+    std::cout << sourceID << "=" << util::hex<UWord> << value.uw
       << std::endl;
   }
 }
@@ -81,19 +104,10 @@ void CommonDataBus::addListener(ReservationStation* rs)
   listeners.push_back(rs);
 }
 
-void CommonDataBus::removeListener(ReservationStation* rs)
-{
-  listeners.remove(rs);
-}
-
-void CommonDataBus::notifyAll()
+void CommonDataBus::notifyListeners()
 {
   auto pred = [&](ReservationStation* rs) {
-    if (rs->notify(source, value))
-    {
-      return true;
-    }
-    return false;
+    return rs->notifyDataBus(sourceID, value);
   };
   listeners.remove_if(pred);
 }

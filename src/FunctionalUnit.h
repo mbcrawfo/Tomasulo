@@ -6,10 +6,10 @@
 #include "instructions/Instruction.h"
 #include <list>
 
-class FunctionalUnitManager;
-using FunctionalUnitPtr = Pointer<FunctionalUnitManager>;
+class FunctionalUnit;
+using FunctionalUnitPtr = Pointer<FunctionalUnit>;
 
-class FunctionalUnitManager
+class FunctionalUnit
 {
 private:
   using ReservationStationList = std::list<ReservationStationPtr>;
@@ -24,17 +24,17 @@ private:
   ReservationStationList writingStations;
 
 public:
-  FunctionalUnitManager(FunctionalUnitType type, 
+  FunctionalUnit(FunctionalUnitType type, 
     bool executeInOrder,
     std::size_t executeCycles,
     std::size_t numStations,
     std::size_t numExecuteUnits,
     ReservationStationDependencies& deps);
-  FunctionalUnitManager& operator=(FunctionalUnitManager&);
+  FunctionalUnit& operator=(FunctionalUnit&);
 
   bool idle() const;
 
-  bool issue(InstructionPtr instruction);
+  bool issue(InstructionPtr instruction, std::size_t clock);
   void execute();
   void write();
   void advanceInstructions();

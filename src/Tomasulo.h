@@ -7,7 +7,7 @@
 #include "RegisterFile.h"
 #include "RenameRegisterFile.h"
 #include "CommonDataBus.h"
-#include "FunctionalUnitManager.h"
+#include "FunctionalUnit.h"
 #include <unordered_map>
 
 class Tomasulo

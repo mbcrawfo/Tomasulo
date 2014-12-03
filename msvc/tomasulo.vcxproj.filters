@@ -52,10 +52,13 @@
     <ClCompile Include="..\src\instructions\TrapInstruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\FunctionalUnitManager.cpp" />
     <ClCompile Include="..\src\instructions\MemoryInstruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\instructions\FloatingPointInstruction.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FunctionalUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -84,9 +87,12 @@
     <ClInclude Include="..\src\instructions\TrapInstruction.h">
       <Filter>instructions</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\FunctionalUnitManager.h" />
     <ClInclude Include="..\src\instructions\MemoryInstruction.h">
       <Filter>instructions</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\instructions\FloatingPointInstruction.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\FunctionalUnit.h" />
   </ItemGroup>
 </Project>

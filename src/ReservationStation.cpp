@@ -28,6 +28,7 @@ ReservationStation::ReservationStation(const ReservationStationID& id,
     instruction(nullptr),
     state(ReservationStationState::Idle),
     executeCycles(executeCycles),
+    startClock(0),
     executeCyclesRemaining(0),
     arg1(),
     arg1Ready(false),
@@ -49,11 +50,27 @@ ReservationStationState ReservationStation::getState() const
   return state;
 }
 
-void ReservationStation::setInstruction(InstructionPtr instr)
+std::size_t ReservationStation::getStartClock() const
+{
+  return startClock;
+}
+
+RegisterID ReservationStation::getDest() const
+{
+  return instruction->getDest();
+}
+
+Data ReservationStation::getResult() const
+{
+  return result;
+}
+
+void ReservationStation::setInstruction(InstructionPtr instr, std::size_t clock)
 {
   instruction = instr;
   logger->debug(TAG) << id << " was issued " << instruction->getName();
 
+  startClock = clock;
   executeCyclesRemaining = executeCycles;
   arg1.uw = 0;
   arg1Ready = false;
@@ -127,10 +144,7 @@ void ReservationStation::write()
     break;
 
   case WriteAction::Register:
-    if (deps.cdb->write(id, instruction->getDest(), result))
-    {
-      state = ReservationStationState::WriteComplete;
-    }
+    deps.cdb->write(this);
     break;
 
   case WriteAction::PC:
@@ -195,7 +209,8 @@ void ReservationStation::dumpState() const
   }
 }
 
-bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
+bool ReservationStation::notifyDataBus(const ReservationStationID& rsid,
+  Data value)
 {
   if (!arg1Ready && rsid == arg1Source)
   {
@@ -222,6 +237,12 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
   }
 
   return false;
+}
+
+void ReservationStation::notifyWriteAccepted()
+{
+  assert(state == ReservationStationState::Writing);
+  state = ReservationStationState::WriteComplete;
 }
 
 void ReservationStation::setArgSources()

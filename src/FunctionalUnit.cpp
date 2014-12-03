@@ -1,4 +1,4 @@
-#include "FunctionalUnitManager.h"
+#include "FunctionalUnit.h"
 #include "log.h"
 #include <string>
 #include <cassert>
@@ -6,9 +6,9 @@
 #include <iostream>
 #include <iomanip>
 
-static const std::string TAG = "FunctionalUnitManager";
+static const std::string TAG = "FunctionalUnit";
 
-FunctionalUnitManager::FunctionalUnitManager(FunctionalUnitType type, 
+FunctionalUnit::FunctionalUnit(FunctionalUnitType type, 
   bool executeInOrder,
   std::size_t executeCycles,
   std::size_t numStations,
@@ -33,13 +33,13 @@ FunctionalUnitManager::FunctionalUnitManager(FunctionalUnitType type,
   }
 }
 
-bool FunctionalUnitManager::idle() const
+bool FunctionalUnit::idle() const
 {
   return issuedStations.empty() && executingStations.empty() 
     && writingStations.empty();
 }
 
-bool FunctionalUnitManager::issue(InstructionPtr instruction)
+bool FunctionalUnit::issue(InstructionPtr instruction, std::size_t clock)
 {
   assert(instruction != nullptr);
 
@@ -52,12 +52,12 @@ bool FunctionalUnitManager::issue(InstructionPtr instruction)
 
   auto rs = idleStations.front();
   idleStations.pop_front();
-  rs->setInstruction(instruction);
+  rs->setInstruction(instruction, clock);
   issuedStations.push_back(rs);
   return true;
 }
 
-void FunctionalUnitManager::execute()
+void FunctionalUnit::execute()
 {
   for (auto rs : executingStations)
   {
@@ -65,7 +65,7 @@ void FunctionalUnitManager::execute()
   }
 }
 
-void FunctionalUnitManager::write()
+void FunctionalUnit::write()
 {
   for (auto rs : writingStations)
   {
@@ -73,7 +73,7 @@ void FunctionalUnitManager::write()
   }
 }
 
-void FunctionalUnitManager::advanceInstructions()
+void FunctionalUnit::advanceInstructions()
 {
   // retire completed
   auto writePred = [&](ReservationStationPtr rs) {
@@ -98,7 +98,7 @@ void FunctionalUnitManager::advanceInstructions()
   }
 }
 
-void FunctionalUnitManager::dumpState() const
+void FunctionalUnit::dumpState() const
 {
   auto idle = idleStations.size();
   auto used = issuedStations.size() + executingStations.size() 
@@ -116,12 +116,12 @@ void FunctionalUnitManager::dumpState() const
   }
 }
 
-bool FunctionalUnitManager::executeUnitsAvailable()
+bool FunctionalUnit::executeUnitsAvailable()
 {
   return (executingStations.size() + writingStations.size()) < numExecuteUnits;
 }
 
-void FunctionalUnitManager::inOrderAdvance()
+void FunctionalUnit::inOrderAdvance()
 { 
   // move from execute to write
   while (!executingStations.empty())
@@ -165,7 +165,7 @@ void FunctionalUnitManager::inOrderAdvance()
   }
 }
 
-void FunctionalUnitManager::outOfOrderAdvance()
+void FunctionalUnit::outOfOrderAdvance()
 {
   // move from execute to write
   auto execPred = [&](ReservationStationPtr rs) {

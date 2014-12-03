@@ -178,7 +178,7 @@ std::ostream& operator<<(std::ostream& os, FunctionalUnitType type)
     os << "Memory";
     break;    
   case FunctionalUnitType::FloatingPoint:
-    os << "Floating Point";
+    os << "Float";
     break;
   }
   return os;

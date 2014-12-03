@@ -3,6 +3,7 @@
 #include "instructions/IntegerInstruction.h"
 #include "instructions/TrapInstruction.h"
 #include "instructions/MemoryInstruction.h"
+#include "instructions/FloatingPointInstruction.h"
 #include "utility/stream_manip.h"
 #include <string>
 #include <cassert>
@@ -77,6 +78,10 @@ void InstructionFactory::createInstruction()
     result = InstructionPtr(new MemoryInstruction(memory));
     break;
 
+  case FunctionalUnitType::FloatingPoint:
+    result = InstructionPtr(new FloatingPointInstruction);
+    break;
+
   default:
     logger->error(TAG) << fuType << " not implemented";
     return;
@@ -128,6 +133,7 @@ void InstructionFactory::setRegisterTypes()
     {
       result->rs1.type = RegisterType::GPR;
     }
+    result->rs2 = RegisterID::NONE;
     break;
 
     // none
@@ -143,7 +149,9 @@ void InstructionFactory::setRegisterTypes()
   case InstructionName::BEQZ:
   case InstructionName::JR:
   case InstructionName::JALR:
+    result->rd = RegisterID::NONE;
     result->rs1.type = RegisterType::GPR;
+    result->rs2 = RegisterID::NONE;
     break;
 
     // GPR rd and rs1
@@ -152,6 +160,7 @@ void InstructionFactory::setRegisterTypes()
   case InstructionName::SW:
     result->rd.type = RegisterType::GPR;
     result->rs1.type = RegisterType::GPR;
+    result->rs2 = RegisterID::NONE;
     break;
 
     // FPR rd, GPR rs1
@@ -160,12 +169,14 @@ void InstructionFactory::setRegisterTypes()
   case InstructionName::MOVI2FP:
     result->rd.type = RegisterType::FPR;
     result->rs1.type = RegisterType::GPR;
+    result->rs2 = RegisterID::NONE;
     break;
 
     // GPR rd, FPR rs1
   case InstructionName::MOVFP2I:
     result->rd.type = RegisterType::GPR;
     result->rs1.type = RegisterType::FPR;
+    result->rs2 = RegisterID::NONE;
     break;
 
     // FPR rd and rs1
@@ -174,6 +185,7 @@ void InstructionFactory::setRegisterTypes()
   case InstructionName::CVTI2F:
     result->rd.type = RegisterType::FPR;
     result->rs1.type = RegisterType::FPR;
+    result->rs2 = RegisterID::NONE;
     break;
 
     // 3x GPR

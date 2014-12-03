@@ -47,6 +47,7 @@ private:
   ReservationStationState state;
 
   const std::size_t executeCycles;
+  std::size_t startClock;
   std::size_t executeCyclesRemaining;
   Data arg1;
   bool arg1Ready;
@@ -64,8 +65,11 @@ public:
 
   ReservationStationID getID() const;
   ReservationStationState getState() const;
+  std::size_t getStartClock() const;
+  RegisterID getDest() const;
+  Data getResult() const;
 
-  void setInstruction(InstructionPtr instr);
+  void setInstruction(InstructionPtr instr, std::size_t clock);
   void clearInstruction();
 
   void setIsExecuting();
@@ -74,7 +78,8 @@ public:
   void write();
   void dumpState() const;
 
-  bool notify(const ReservationStationID& rsid, Data value);
+  bool notifyDataBus(const ReservationStationID& rsid, Data value);
+  void notifyWriteAccepted();
 
 private:
   void setArgSources();

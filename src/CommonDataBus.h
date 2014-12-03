@@ -16,29 +16,29 @@ class CommonDataBus
 private:
   bool used;
   bool idleThisCycle;
-  ReservationStationID source;
-  RegisterID dest;
-  Data value;  
+  ReservationStation* source;
+  ReservationStationID sourceID;
+  RegisterID destID;
+  Data value;
   RegisterFilePtr registers;
   RenameRegisterFilePtr renameRegisters;
   std::list<ReservationStation*> listeners;
+  std::list<ReservationStation*> rejected;
 
 public:
   explicit CommonDataBus(RegisterFilePtr registers,
     RenameRegisterFilePtr renameRegisters);
   CommonDataBus& operator=(CommonDataBus&) = delete;
 
-  bool write(const ReservationStationID& source, const RegisterID& dest,
-    Data value);
+  void write(ReservationStation* src);
   void commit();
 
   void dumpState() const;
 
   void addListener(ReservationStation* rs);
-  void removeListener(ReservationStation* rs);
 
 private:
-  void notifyAll();
+  void notifyListeners();
 };
 
 #endif
