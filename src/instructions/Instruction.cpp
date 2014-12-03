@@ -15,17 +15,17 @@ FunctionalUnitType Instruction::getType() const
   return type;
 }
 
-RegisterID Instruction::getRd() const
+RegisterID Instruction::getDest() const
 {
   return rd;
 }
 
-RegisterID Instruction::getRs1() const
+RegisterID Instruction::getArg1() const
 {
   return rs1;
 }
 
-RegisterID Instruction::getRs2() const
+RegisterID Instruction::getArg2() const
 {
   return rs2;
 }

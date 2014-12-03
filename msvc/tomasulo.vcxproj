@@ -96,6 +96,7 @@
     <ClCompile Include="..\src\instructions\InstructionFactory.cpp" />
     <ClCompile Include="..\src\instructions\instruction_types.cpp" />
     <ClCompile Include="..\src\instructions\IntegerInstruction.cpp" />
+    <ClCompile Include="..\src\instructions\MemoryInstruction.cpp" />
     <ClCompile Include="..\src\instructions\TrapInstruction.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\Memory.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="..\src\instructions\InstructionFactory.h" />
     <ClInclude Include="..\src\instructions\instruction_types.h" />
     <ClInclude Include="..\src\instructions\IntegerInstruction.h" />
+    <ClInclude Include="..\src\instructions\MemoryInstruction.h" />
     <ClInclude Include="..\src\instructions\TrapInstruction.h" />
     <ClInclude Include="..\src\log.h" />
     <ClInclude Include="..\src\Memory.h" />

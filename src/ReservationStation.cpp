@@ -74,10 +74,10 @@ void ReservationStation::setInstruction(InstructionPtr instr)
     state = ReservationStationState::WaitingForArgs;
   }
 
-  if (instruction->getRd() != RegisterID::NONE &&
-    instruction->getRd() != RegisterID::R0)
+  if (instruction->getDest() != RegisterID::NONE &&
+    instruction->getDest() != RegisterID::R0)
   {
-    deps.renameRegisters->rename(instruction->getRd(), id);
+    deps.renameRegisters->rename(instruction->getDest(), id);
   }
 }
 
@@ -103,6 +103,11 @@ void ReservationStation::execute()
     state = ReservationStationState::ExecutionComplete;
     logger->debug(TAG) << id << " completed execution";
   }
+  else
+  {
+    logger->debug(TAG) << id << " has " << executeCyclesRemaining
+      << " cycles left";
+  }
 }
 
 void ReservationStation::setIsWriting()
@@ -120,7 +125,7 @@ void ReservationStation::write()
     break;
 
   case WriteAction::Register:
-    if (deps.cdb->set(id, instruction->getRd(), result))
+    if (deps.cdb->set(id, instruction->getDest(), result))
     {
       state = ReservationStationState::WriteComplete;
     }
@@ -132,6 +137,10 @@ void ReservationStation::write()
     break;
 
   case WriteAction::Memory:
+    deps.memory->writeUWord(result.uw, arg2.uw);
+    state = ReservationStationState::WriteComplete;
+    logger->debug(TAG) << id << " wrote " << util::hex<UWord> << arg2.uw
+      << " to " << util::hex<UWord> << result.uw;
     break;
   }
 }
@@ -143,7 +152,7 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
     arg1 = value;
     arg1Ready = true;
     arg1Source = ReservationStationID::NONE;
-    logger->debug(TAG) << id << " captured " << instruction->getRs1() << "=" 
+    logger->debug(TAG) << id << " captured " << instruction->getArg1() << "=" 
       << util::hex<UWord> << arg1.uw << " from " << rsid;
   }
   if (!arg2Ready && rsid == arg2Source)
@@ -151,7 +160,7 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
     arg2 = value;
     arg2Ready = true;
     arg2Source = ReservationStationID::NONE;
-    logger->debug(TAG) << id << " captured " << instruction->getRs2() << "=" 
+    logger->debug(TAG) << id << " captured " << instruction->getArg2() << "=" 
       << util::hex<UWord> << arg2.uw << " from " << rsid;
   }
 
@@ -167,7 +176,7 @@ bool ReservationStation::notify(const ReservationStationID& rsid, Data value)
 
 void ReservationStation::setArgSources()
 {
-  auto rs1 = instruction->getRs1();
+  auto rs1 = instruction->getArg1();
   if (rs1 == RegisterID::NONE)
   {
     arg1Ready = true;
@@ -189,7 +198,7 @@ void ReservationStation::setArgSources()
     }
   }
 
-  auto rs2 = instruction->getRs2();
+  auto rs2 = instruction->getArg2();
   if (rs2 == RegisterID::NONE)
   {
     arg2Ready = true;

@@ -53,6 +53,9 @@
       <Filter>instructions</Filter>
     </ClCompile>
     <ClCompile Include="..\src\FunctionalUnitManager.cpp" />
+    <ClCompile Include="..\src\instructions\MemoryInstruction.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\log.h" />
@@ -82,5 +85,8 @@
       <Filter>instructions</Filter>
     </ClInclude>
     <ClInclude Include="..\src\FunctionalUnitManager.h" />
+    <ClInclude Include="..\src\instructions\MemoryInstruction.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

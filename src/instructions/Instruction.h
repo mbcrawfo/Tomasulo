@@ -22,19 +22,21 @@ class Instruction
 private:
   InstructionName name;
   FunctionalUnitType type;
+  UWord immediate;
+
+protected:
   RegisterID rd;
   RegisterID rs1;
-  RegisterID rs2;
-  UWord immediate;
+  RegisterID rs2;  
 
 public:
   Instruction() = default;
 
   InstructionName getName() const;
   FunctionalUnitType getType() const;
-  RegisterID getRd() const;
-  RegisterID getRs1() const;
-  RegisterID getRs2() const;
+  virtual RegisterID getDest() const;
+  virtual RegisterID getArg1() const;
+  virtual RegisterID getArg2() const;
   UWord getImmediate() const;
 
   virtual Data execute(Data arg1, Data arg2) const = 0;

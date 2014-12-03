@@ -18,6 +18,10 @@ static const int TRAP_CYCLES = 1;
 static const int TRAP_STATIONS = 4;
 static const int TRAP_UNITS = 1;
 
+static const int MEMORY_CYCLES = 2;
+static const int MEMORY_STATIONS = 8;
+static const int MEMORY_UNITS = 1;
+
 Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
   : verbose(verbose),
     instructionFactory(nullptr),
@@ -44,10 +48,10 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
     new InstructionFactory(memory, registerFile)
     );
 
+  // create all functional units
   ReservationStationDependencies deps(
     registerFile, renameRegisterFile, memory, pc, commonDataBus
     );
-
   functionalUnits[FunctionalUnitType::Integer] = 
     FunctionalUnitPtr(
       new FunctionalUnitManager(
@@ -60,6 +64,13 @@ Tomasulo::Tomasulo(MemoryPtr memory, bool verbose)
       new FunctionalUnitManager(
         FunctionalUnitType::Trap, true, TRAP_CYCLES,
         TRAP_STATIONS, TRAP_UNITS, deps
+        )
+    );
+  functionalUnits[FunctionalUnitType::Memory] =
+    FunctionalUnitPtr(
+      new FunctionalUnitManager(
+        FunctionalUnitType::Memory, true, MEMORY_CYCLES, 
+        MEMORY_STATIONS, MEMORY_UNITS, deps
         )
     );
 }

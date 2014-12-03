@@ -2,6 +2,7 @@
 #include "log.h"
 #include "instructions/IntegerInstruction.h"
 #include "instructions/TrapInstruction.h"
+#include "instructions/MemoryInstruction.h"
 #include "utility/stream_manip.h"
 #include <string>
 #include <cassert>
@@ -70,6 +71,10 @@ void InstructionFactory::createInstruction()
 
   case FunctionalUnitType::Trap:
     result = InstructionPtr(new TrapInstruction(memory, registers));
+    break;
+
+  case FunctionalUnitType::Memory:
+    result = InstructionPtr(new MemoryInstruction(memory));
     break;
 
   default:
