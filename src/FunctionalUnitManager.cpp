@@ -3,6 +3,8 @@
 #include <string>
 #include <cassert>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 static const std::string TAG = "FunctionalUnitManager";
 
@@ -23,9 +25,11 @@ FunctionalUnitManager::FunctionalUnitManager(FunctionalUnitType type,
   for (std::size_t i = 0; i < numStations; i++)
   {
     ReservationStationID id = { type, i };
-    idleStations.push_back(      
-      ReservationStationPtr(new ReservationStation(id, executeCycles, deps))
+    auto rs = ReservationStationPtr(
+      new ReservationStation(id, executeCycles, deps)
       );
+    allStations.push_back(rs);
+    idleStations.push_back(rs);
   }
 }
 
@@ -94,6 +98,24 @@ void FunctionalUnitManager::advanceInstructions()
   }
 }
 
+void FunctionalUnitManager::dumpState() const
+{
+  auto idle = idleStations.size();
+  auto used = issuedStations.size() + executingStations.size() 
+    + writingStations.size();
+  auto unitsUsed = used - issuedStations.size();
+  std::cout << type << " Functional Unit" << std::endl;
+  std::cout << "\t" << "Stations: " << std::dec << used << " in use, "
+    << idle << " idle" << std::endl;
+  std::cout << "\t" << "ExecuteUnits: " << unitsUsed << " in use, " 
+    << (numExecuteUnits - unitsUsed) << " idle" << std::endl;
+
+  for (auto rs : allStations)
+  {
+    rs->dumpState();
+  }
+}
+
 bool FunctionalUnitManager::executeUnitsAvailable()
 {
   return (executingStations.size() + writingStations.size()) < numExecuteUnits;
@@ -146,7 +168,7 @@ void FunctionalUnitManager::inOrderAdvance()
 void FunctionalUnitManager::outOfOrderAdvance()
 {
   // move from execute to write
-  auto pred2 = [&](ReservationStationPtr rs) {
+  auto execPred = [&](ReservationStationPtr rs) {
     if (rs->getState() == ReservationStationState::ExecutionComplete)
     {
       rs->setIsWriting();
@@ -155,10 +177,10 @@ void FunctionalUnitManager::outOfOrderAdvance()
     }
     return false;
   };
-  executingStations.remove_if(pred2);
+  executingStations.remove_if(execPred);
 
   // move from issued to execute
-  auto pred = [&](ReservationStationPtr rs) {
+  auto issuePred = [&](ReservationStationPtr rs) {
     if (rs->getState() == ReservationStationState::ReadyToExecute)
     {
       if (!executeUnitsAvailable())
@@ -173,5 +195,5 @@ void FunctionalUnitManager::outOfOrderAdvance()
     }
     return false;
   };
-  issuedStations.remove_if(pred);  
+  issuedStations.remove_if(issuePred);
 }

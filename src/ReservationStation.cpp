@@ -3,6 +3,7 @@
 #include "utility/stream_manip.h"
 #include <string>
 #include <cassert>
+#include <iostream>
 
 static const std::string TAG = "ReservationStation";
 
@@ -83,6 +84,7 @@ void ReservationStation::setInstruction(InstructionPtr instr)
 
 void ReservationStation::clearInstruction()
 {
+  deps.renameRegisters->clearRename(id);
   instruction = InstructionPtr();
   state = ReservationStationState::Idle;
   logger->debug(TAG) << id << " cleared";
@@ -125,7 +127,7 @@ void ReservationStation::write()
     break;
 
   case WriteAction::Register:
-    if (deps.cdb->set(id, instruction->getDest(), result))
+    if (deps.cdb->write(id, instruction->getDest(), result))
     {
       state = ReservationStationState::WriteComplete;
     }
@@ -141,6 +143,54 @@ void ReservationStation::write()
     state = ReservationStationState::WriteComplete;
     logger->debug(TAG) << id << " wrote value " << util::hex<UWord> << arg2.uw
       << " to address " << util::hex<UWord> << result.uw;
+    break;
+  }
+}
+
+void ReservationStation::dumpState() const
+{
+  switch (state)
+  {
+  case ReservationStationState::Idle:
+    //std::cout << "\t" << id << ": idle" << std::endl;
+    break;
+
+  case ReservationStationState::WaitingForArgs:
+    std::cout << "\t" << id << ": " << instruction->getName() 
+      << ", waiting for ";
+    if (!arg1Ready)
+    {
+      std::cout << arg1Source;
+    }
+    if (!arg1Ready && !arg2Ready)
+    {
+      std::cout << " and ";
+    }
+    if (!arg2Ready)
+    {
+      std::cout << arg2Source;
+    }
+    std::cout << std::endl;
+    break;
+
+  case ReservationStationState::ReadyToExecute:  
+    std::cout << "\t" << id << ": " << instruction->getName()
+      << ", ready to execute" << std::endl;
+    break;
+
+  case ReservationStationState::Executing:
+  case ReservationStationState::ExecutionComplete:
+    std::cout << "\t" << id << ": " << instruction->getName()
+      << ", executing" << std::endl;
+    break;
+
+  case ReservationStationState::Writing:
+  case ReservationStationState::WriteComplete:
+    std::cout << "\t" << id << ": " << instruction->getName()
+      << ", writing" << std::endl;
+    break;
+      
+  default:
     break;
   }
 }

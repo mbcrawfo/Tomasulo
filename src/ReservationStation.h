@@ -72,6 +72,7 @@ public:
   void execute();
   void setIsWriting();
   void write();
+  void dumpState() const;
 
   bool notify(const ReservationStationID& rsid, Data value);
 

@@ -17,6 +17,7 @@ private:
   FunctionalUnitType type;
   bool executeInOrder;
   const std::size_t numExecuteUnits;
+  ReservationStationList allStations;
   ReservationStationList idleStations;
   ReservationStationList issuedStations;
   ReservationStationList executingStations;
@@ -37,6 +38,7 @@ public:
   void execute();
   void write();
   void advanceInstructions();
+  void dumpState() const;
 
 private:
   bool executeUnitsAvailable();

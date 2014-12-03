@@ -4,6 +4,8 @@
 #include "utility/stream_manip.h"
 #include <cassert>
 #include <string>
+#include <iostream>
+#include <iomanip>
 
 static const std::string TAG = "Tomasulo";
 
@@ -102,7 +104,8 @@ void Tomasulo::run(Address entryPoint)
     issue();
     execute();
     write();
-        
+
+    dumpState();        
     logger->info(TAG) << "****CLOCK CYCLE " << clockCounter << " END****\n";
   }
 }
@@ -166,9 +169,8 @@ void Tomasulo::write()
   for (auto fu : functionalUnits)
   {
     fu.second->write();
-  }
-  commonDataBus->notifyAll();
-  commonDataBus->writeAndClear();
+  }  
+  commonDataBus->commit();
   logger->debug(TAG, "**WRITE END**");
 }
 
@@ -191,4 +193,63 @@ bool Tomasulo::functionalUnitsIdle() const
   }
 
   return true;
+}
+
+void Tomasulo::dumpState() const
+{
+  if (!verbose)
+  {
+    return;
+  }
+
+  std::cout << "\nClock cycle: " << std::dec << clockCounter << std::endl;
+  std::cout << "\t" << "PC=" << util::hex<Address> << pc << std::endl;
+  std::cout << "\t" << "Issue Stalled=" << (stallIssue ? "Y" : "N") << std::endl;
+  std::cout << "\t" << "Halted=" << (halted ? "Y" : "N") << std::endl;
+
+  for (auto fu : functionalUnits)
+  {
+    fu.second->dumpState();
+  }
+
+  commonDataBus->dumpState();
+  dumpRegisters();
+}
+
+void Tomasulo::dumpRegisters() const
+{
+  RegisterID reg = RegisterID::R0;
+
+  std::cout << "R0-R7: ";
+  for (std::size_t i = 0; i < 8; i++)
+  {
+    reg.index = i;
+    auto rename = renameRegisterFile->getRenaming(reg);
+    if (rename == ReservationStationID::NONE)
+    {
+      std::cout << util::hex<UWord> << registerFile->read(reg).uw << " ";
+    }
+    else
+    {
+      std::cout << rename << " ";
+    }
+  }
+  std::cout << std::endl;
+
+  reg.type = RegisterType::FPR;
+  std::cout << "F0-F7: ";
+  for (std::size_t i = 0; i < 8; i++)
+  {
+    reg.index = i;
+    auto rename = renameRegisterFile->getRenaming(reg);
+    if (rename == ReservationStationID::NONE)
+    {
+      std::cout << registerFile->read(reg).f << " ";
+    }
+    else
+    {
+      std::cout << rename << " ";
+    }
+  }
+  std::cout << std::endl;
 }

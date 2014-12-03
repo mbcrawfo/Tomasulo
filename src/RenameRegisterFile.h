@@ -23,7 +23,7 @@ public:
   void clearRename(const ReservationStationID& rsid);
 
   ReservationStationID getRenaming(const RegisterID& reg) const;
-  RegisterID getReverseMapping(const ReservationStationID& rsid) const;
+  RegisterID getReverseRename(const ReservationStationID& rsid) const;
 };
 
 #endif

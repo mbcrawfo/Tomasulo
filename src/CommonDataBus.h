@@ -15,6 +15,7 @@ class CommonDataBus
 {
 private:
   bool used;
+  bool idleThisCycle;
   ReservationStationID source;
   RegisterID dest;
   Data value;  
@@ -27,13 +28,17 @@ public:
     RenameRegisterFilePtr renameRegisters);
   CommonDataBus& operator=(CommonDataBus&) = delete;
 
-  bool set(const ReservationStationID& source, const RegisterID& dest,
+  bool write(const ReservationStationID& source, const RegisterID& dest,
     Data value);
-  void writeAndClear();
-  void notifyAll();
+  void commit();
+
+  void dumpState() const;
 
   void addListener(ReservationStation* rs);
   void removeListener(ReservationStation* rs);
+
+private:
+  void notifyAll();
 };
 
 #endif

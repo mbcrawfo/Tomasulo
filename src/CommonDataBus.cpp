@@ -5,12 +5,14 @@
 #include <string>
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 static const std::string TAG = "CommonDataBus";
 
 CommonDataBus::CommonDataBus(RegisterFilePtr registers,
   RenameRegisterFilePtr renameRegisters)
   : used(false),
+    idleThisCycle(true),
     source(ReservationStationID::NONE),
     dest(RegisterID::NONE),
     value(),
@@ -22,7 +24,7 @@ CommonDataBus::CommonDataBus(RegisterFilePtr registers,
   assert(renameRegisters != nullptr);
 }
 
-bool CommonDataBus::set(const ReservationStationID& source,
+bool CommonDataBus::write(const ReservationStationID& source,
   const RegisterID& dest, Data value)
 {
   if (used)
@@ -35,39 +37,41 @@ bool CommonDataBus::set(const ReservationStationID& source,
   this->dest = dest;
   this->value = value;
   used = true;
+  idleThisCycle = false;
   logger->debug(TAG) << source << " wrote "
     << dest << "=" << util::hex<UWord> << value.uw;
 
   return true;
 }
 
-void CommonDataBus::writeAndClear()
+void CommonDataBus::commit()
 {
   if (used)
   {
+    notifyAll();
     registers->write(dest, value);
     logger->debug(TAG) << "Committed " << dest << "=" 
       << util::hex<UWord> << value.uw << " to register file";
 
-    renameRegisters->clearRename(source);
     used = false;
-    source = ReservationStationID::NONE;
-    dest = RegisterID::NONE;
+  }
+  else
+  {
+    idleThisCycle = true;
   }
 }
 
-void CommonDataBus::notifyAll()
+void CommonDataBus::dumpState() const
 {
-  if (used)
+  std::cout << "CDB: ";
+  if (idleThisCycle)
   {
-    auto pred = [&](ReservationStation* rs) {
-      if (rs->notify(source, value))
-      {
-        return true;
-      }
-      return false;
-    };
-    listeners.remove_if(pred);
+    std::cout << "Empty" << std::endl;
+  }
+  else
+  {
+    std::cout << source << "=" << util::hex<UWord> << value.uw
+      << std::endl;
   }
 }
 
@@ -81,3 +85,16 @@ void CommonDataBus::removeListener(ReservationStation* rs)
 {
   listeners.remove(rs);
 }
+
+void CommonDataBus::notifyAll()
+{
+  auto pred = [&](ReservationStation* rs) {
+    if (rs->notify(source, value))
+    {
+      return true;
+    }
+    return false;
+  };
+  listeners.remove_if(pred);
+}
+

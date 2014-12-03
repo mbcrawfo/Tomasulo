@@ -43,6 +43,8 @@ private:
   void write();
   void advanceInstructions();
   bool functionalUnitsIdle() const;
+  void dumpState() const;
+  void dumpRegisters() const;
 };
 
 #endif

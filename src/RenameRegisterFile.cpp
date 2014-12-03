@@ -1,6 +1,7 @@
 #include "RenameRegisterFile.h"
 #include "log.h"
 #include <string>
+#include <iostream>
 
 static const std::string TAG = "RenameRegisterFile";
 
@@ -40,7 +41,7 @@ void RenameRegisterFile::clearRename(const RegisterID& reg)
 
 void RenameRegisterFile::clearRename(const ReservationStationID& rsid)
 {
-  clearRename(getReverseMapping(rsid));
+  clearRename(getReverseRename(rsid));
 }
 
 ReservationStationID RenameRegisterFile::getRenaming(
@@ -51,7 +52,7 @@ ReservationStationID RenameRegisterFile::getRenaming(
     ReservationStationID::NONE : itr->second;
 }
 
-RegisterID RenameRegisterFile::getReverseMapping(
+RegisterID RenameRegisterFile::getReverseRename(
   const ReservationStationID& rsid) const
 {
   for (auto entry : renameRegisters)
