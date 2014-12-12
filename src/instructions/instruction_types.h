@@ -59,9 +59,21 @@ enum class InstructionName
   DIV
 };
 
-extern InstructionEncodingType getEncodingType(Byte opcode);
-extern InstructionName getName(Byte opcode, Byte funcode = 0);
+/**
+* Look up the type of an instruction.
+*/
 extern FunctionalUnitType getInstructionType(InstructionName name);
+
+/**
+ * Look up the name/mnemonic of an instruction given its opcode and function
+ * code.
+ */
+extern InstructionName getName(Byte opcode, Byte funcode = 0);
+
+/**
+* Look up the encoding of an instruction given its opcode.
+*/
+extern InstructionEncodingType getEncodingType(Byte opcode);
 
 std::ostream& operator<<(std::ostream& os, FunctionalUnitType type);
 std::ostream& operator<<(std::ostream& os, InstructionEncodingType type);

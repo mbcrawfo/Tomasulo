@@ -80,7 +80,16 @@ public:
   void write();
   void dumpState() const;
 
+  /**
+   * Notify the reservation station of a value written to the CDB.
+   * Returns false if the RS wants to be removed as a CDB listener.
+   */
   bool notifyDataBus(const ReservationStationID& rsid, Data value);
+
+  /**
+   * Notify this RS that its request to write to the CDB was accepted and 
+   * written.
+   */
   void notifyWriteAccepted();
 
 private:

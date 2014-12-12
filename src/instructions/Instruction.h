@@ -18,6 +18,10 @@ enum class WriteAction
   Memory
 };
 
+/**
+ * The base class for all instructions in tomasulo.  Is extended for each 
+ * functional unit type.
+ */
 class Instruction
 {
 private:
@@ -40,7 +44,14 @@ public:
   virtual RegisterID getArg2() const;
   UWord getImmediate() const;
 
+  /**
+   * Perform the execute action for this instruction and return its result.
+   */
   virtual Data execute(Data arg1, Data arg2) const = 0;
+
+  /**
+   * Get the write stage action for this instruction (default: none).
+   */
   virtual WriteAction getWriteAction() const;
 
   friend class InstructionFactory;

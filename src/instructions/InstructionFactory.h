@@ -26,6 +26,10 @@ public:
     RegisterFilePtr registers);
   InstructionFactory& operator=(InstructionFactory&) = delete;
 
+  /**
+   * Decode a word from memory and construct an instruction based on the 
+   * decoded information.
+   */
   InstructionPtr decode(UWord rawInstruction);
 
 private:
