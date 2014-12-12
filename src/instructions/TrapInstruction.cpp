@@ -2,7 +2,9 @@
 #include "log.h"
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <cassert>
+#include <sstream>
 
 static const std::string TAG = "TrapInstruction";
 
@@ -26,7 +28,20 @@ Data TrapInstruction::execute(Data arg1, Data arg2) const
     break;
 
   case 2:
-    std::cout << arg1.f << std::flush;
+    {
+      std::ostringstream ss;
+      ss << std::showpoint << arg1.f;
+      std::string str = ss.str();
+      while (str.back() == '0')
+      {
+        str.pop_back();
+      }
+      if (str.back() == '.')
+      {
+        str.push_back('0');
+      }
+      std::cout << str << std::flush;
+    }
     break;
 
   case 3:
